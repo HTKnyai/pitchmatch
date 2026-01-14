@@ -19,8 +19,8 @@ export function DifficultySelector({
 }: DifficultySelectorProps) {
   return (
     <View className="mb-6">
-      <Text className="text-white text-lg font-bold mb-3">Difficulty</Text>
-      <View className="flex-row bg-primary-800 rounded-xl p-1">
+      <Text className="text-soft-charcoal text-lg font-bold mb-3">Difficulty</Text>
+      <View className="flex-row bg-white/60 rounded-2xl p-1 border border-soft-charcoal/10">
         {difficulties.map(({ key, label }) => {
           const config = DIFFICULTY_CONFIG[key];
           const isSelected = value === key;
@@ -29,20 +29,20 @@ export function DifficultySelector({
             <Pressable
               key={key}
               onPress={() => onValueChange(key)}
-              className={`flex-1 py-3 rounded-lg items-center ${
-                isSelected ? "bg-primary-500" : ""
+              className={`flex-1 py-3 rounded-xl items-center ${
+                isSelected ? "bg-warm-sage" : ""
               }`}
             >
               <Text
                 className={`font-bold ${
-                  isSelected ? "text-white" : "text-primary-300"
+                  isSelected ? "text-white" : "text-soft-charcoal/60"
                 }`}
               >
                 {label}
               </Text>
               <Text
                 className={`text-xs mt-1 ${
-                  isSelected ? "text-primary-100" : "text-primary-400"
+                  isSelected ? "text-white/80" : "text-soft-charcoal/40"
                 }`}
               >
                 {config.pairCount} pairs

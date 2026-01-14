@@ -55,38 +55,38 @@ function SinglePlayerResult({
   return (
     <View className="items-center">
       {isHighScore && (
-        <View className="bg-yellow-500 px-4 py-1 rounded-full mb-4">
-          <Text className="text-yellow-900 font-bold">NEW HIGH SCORE!</Text>
+        <View className="bg-pastel-yellow px-4 py-1 rounded-full mb-4 border border-soft-charcoal/10">
+          <Text className="text-soft-charcoal font-bold">NEW HIGH SCORE!</Text>
         </View>
       )}
 
-      <Text className="text-primary-200 text-lg">Final Score</Text>
-      <Text className="text-white text-5xl font-bold mb-6">
+      <Text className="text-soft-charcoal/60 text-lg">Final Score</Text>
+      <Text className="text-soft-charcoal text-5xl font-bold mb-6">
         {formatScore(finalScore)}
       </Text>
 
-      <View className="w-full bg-primary-800/50 rounded-xl p-4 mb-4">
+      <View className="w-full bg-white/60 rounded-2xl p-4 mb-4 border border-soft-charcoal/10">
         <View className="flex-row justify-between mb-2">
-          <Text className="text-primary-300">Base Score</Text>
-          <Text className="text-white font-bold">
+          <Text className="text-soft-charcoal/60">Base Score</Text>
+          <Text className="text-soft-charcoal font-bold">
             {formatScore(player.score)}
           </Text>
         </View>
         <View className="flex-row justify-between mb-2">
-          <Text className="text-primary-300">Time Bonus</Text>
-          <Text className="text-green-400 font-bold">
+          <Text className="text-soft-charcoal/60">Time Bonus</Text>
+          <Text className="text-warm-sage font-bold">
             +{formatScore(timeBonus)}
           </Text>
         </View>
-        <View className="border-t border-primary-700 pt-2 mt-2 flex-row justify-between">
-          <Text className="text-primary-300">Clear Time</Text>
-          <Text className="text-white font-bold">
+        <View className="border-t border-soft-charcoal/10 pt-2 mt-2 flex-row justify-between">
+          <Text className="text-soft-charcoal/60">Clear Time</Text>
+          <Text className="text-soft-charcoal font-bold">
             {formatTime(elapsedSeconds)}
           </Text>
         </View>
         <View className="flex-row justify-between mt-2">
-          <Text className="text-primary-300">Accuracy</Text>
-          <Text className="text-white font-bold">
+          <Text className="text-soft-charcoal/60">Accuracy</Text>
+          <Text className="text-soft-charcoal font-bold">
             {formatAccuracy(accuracy)}
           </Text>
         </View>
@@ -100,10 +100,10 @@ function TwoPlayerResult({ gameState }: { gameState: GameState }) {
 
   return (
     <View className="items-center">
-      <Text className="text-primary-200 text-lg mb-2">
+      <Text className="text-soft-charcoal/60 text-lg mb-2">
         {result.winner === "tie" ? "It's a" : "Winner"}
       </Text>
-      <Text className="text-white text-4xl font-bold mb-6">
+      <Text className="text-soft-charcoal text-4xl font-bold mb-6">
         {result.winner === "tie"
           ? "TIE!"
           : result.winner === 1
@@ -111,39 +111,39 @@ function TwoPlayerResult({ gameState }: { gameState: GameState }) {
           : "Player 2!"}
       </Text>
 
-      <View className="w-full flex-row justify-around bg-primary-800/50 rounded-xl p-4">
+      <View className="w-full flex-row justify-around bg-white/60 rounded-2xl p-4 border border-soft-charcoal/10">
         <View className="items-center">
           <Text
             className={`text-lg font-bold ${
-              result.winner === 1 ? "text-yellow-400" : "text-primary-300"
+              result.winner === 1 ? "text-warm-blue" : "text-soft-charcoal/60"
             }`}
           >
             Player 1
           </Text>
-          <Text className="text-white text-3xl font-bold">
+          <Text className="text-soft-charcoal text-3xl font-bold">
             {formatScore(result.scores.player1)}
           </Text>
-          <Text className="text-primary-400 text-sm">
+          <Text className="text-soft-charcoal/60 text-sm">
             {gameState.players.player1.matchedPairs} pairs
           </Text>
         </View>
 
         <View className="items-center justify-center">
-          <Text className="text-primary-400 text-2xl">vs</Text>
+          <Text className="text-soft-charcoal/40 text-2xl">vs</Text>
         </View>
 
         <View className="items-center">
           <Text
             className={`text-lg font-bold ${
-              result.winner === 2 ? "text-yellow-400" : "text-primary-300"
+              result.winner === 2 ? "text-warm-blue" : "text-soft-charcoal/60"
             }`}
           >
             Player 2
           </Text>
-          <Text className="text-white text-3xl font-bold">
+          <Text className="text-soft-charcoal text-3xl font-bold">
             {formatScore(result.scores.player2)}
           </Text>
-          <Text className="text-primary-400 text-sm">
+          <Text className="text-soft-charcoal/60 text-sm">
             {gameState.players.player2.matchedPairs} pairs
           </Text>
         </View>

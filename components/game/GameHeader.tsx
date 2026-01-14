@@ -27,7 +27,7 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
   const isTwoPlayer = config.playerCount === 2;
 
   return (
-    <View className="w-full px-4 py-3 bg-primary-800/50">
+    <View className="w-full px-4 py-3 bg-white/40">
       {isTwoPlayer ? (
         // Two player header
         <View className="flex-row items-center justify-between">
@@ -35,15 +35,15 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
             <Text
               className={`text-sm ${
                 gameState.currentPlayer === 1
-                  ? "text-primary-300 font-bold"
-                  : "text-primary-400"
+                  ? "text-warm-blue font-bold"
+                  : "text-soft-charcoal/60"
               }`}
             >
               Player 1
             </Text>
             <Text
               className={`text-2xl font-bold ${
-                gameState.currentPlayer === 1 ? "text-white" : "text-primary-300"
+                gameState.currentPlayer === 1 ? "text-soft-charcoal" : "text-soft-charcoal/60"
               }`}
             >
               {formatScore(gameState.players.player1.score)}
@@ -51,10 +51,10 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
           </View>
 
           <View className="items-center px-4">
-            <Text className="text-primary-200 text-sm">VS</Text>
+            <Text className="text-soft-charcoal/60 text-sm">VS</Text>
             <Pressable
               onPress={onPause}
-              className="mt-1 px-3 py-1 bg-primary-600 rounded-lg"
+              className="mt-1 px-3 py-1 bg-warm-sage rounded-lg"
             >
               <Text className="text-white text-xs">PAUSE</Text>
             </Pressable>
@@ -64,15 +64,15 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
             <Text
               className={`text-sm ${
                 gameState.currentPlayer === 2
-                  ? "text-primary-300 font-bold"
-                  : "text-primary-400"
+                  ? "text-warm-blue font-bold"
+                  : "text-soft-charcoal/60"
               }`}
             >
               Player 2
             </Text>
             <Text
               className={`text-2xl font-bold ${
-                gameState.currentPlayer === 2 ? "text-white" : "text-primary-300"
+                gameState.currentPlayer === 2 ? "text-soft-charcoal" : "text-soft-charcoal/60"
               }`}
             >
               {formatScore(gameState.players.player2.score)}
@@ -83,29 +83,29 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
         // Single player header
         <View className="flex-row items-center justify-between">
           <View className="items-center">
-            <Text className="text-primary-300 text-sm">SCORE</Text>
-            <Text className="text-white text-2xl font-bold">
+            <Text className="text-soft-charcoal/60 text-sm">SCORE</Text>
+            <Text className="text-soft-charcoal text-2xl font-bold">
               {formatScore(gameState.players.player1.score)}
             </Text>
           </View>
 
           <View className="items-center">
-            <Text className="text-primary-300 text-sm">TIME</Text>
-            <Text className="text-white text-2xl font-bold">
+            <Text className="text-soft-charcoal/60 text-sm">TIME</Text>
+            <Text className="text-soft-charcoal text-2xl font-bold">
               {formatTime(elapsedTime)}
             </Text>
           </View>
 
           <View className="items-center">
-            <Text className="text-primary-300 text-sm">PAIRS</Text>
-            <Text className="text-white text-2xl font-bold">
+            <Text className="text-soft-charcoal/60 text-sm">PAIRS</Text>
+            <Text className="text-soft-charcoal text-2xl font-bold">
               {gameState.matchedPairs}/{gameState.totalPairs}
             </Text>
           </View>
 
           <Pressable
             onPress={onPause}
-            className="px-4 py-2 bg-primary-600 rounded-lg"
+            className="px-4 py-2 bg-warm-blue rounded-xl"
           >
             <Text className="text-white font-bold">II</Text>
           </Pressable>

@@ -87,7 +87,7 @@ export default function ResultScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-900">
+    <SafeAreaView className="flex-1 bg-cream">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
@@ -109,7 +109,7 @@ export default function ResultScreen() {
         )}
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 p-4 bg-primary-900 gap-3">
+      <View className="absolute bottom-0 left-0 right-0 p-4 bg-cream border-t border-soft-charcoal/5 gap-3">
         <Button
           title="Play Again"
           onPress={handlePlayAgain}

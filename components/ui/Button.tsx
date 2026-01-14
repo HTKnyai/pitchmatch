@@ -14,20 +14,20 @@ type ButtonProps = {
 
 const variantStyles: Record<ButtonVariant, { container: string; text: string }> = {
   primary: {
-    container: "bg-primary-500 active:bg-primary-600",
+    container: "bg-warm-blue active:bg-warm-blue/90",
     text: "text-white",
   },
   secondary: {
-    container: "bg-primary-100 active:bg-primary-200",
-    text: "text-primary-700",
+    container: "bg-warm-sage active:bg-warm-sage/90",
+    text: "text-white",
   },
   outline: {
-    container: "bg-transparent border-2 border-primary-500 active:bg-primary-50",
-    text: "text-primary-500",
+    container: "bg-white border-2 border-soft-charcoal/10 active:bg-cream",
+    text: "text-soft-charcoal",
   },
   ghost: {
-    container: "bg-transparent active:bg-primary-50",
-    text: "text-primary-500",
+    container: "bg-transparent active:bg-soft-charcoal/5",
+    text: "text-soft-charcoal",
   },
 };
 

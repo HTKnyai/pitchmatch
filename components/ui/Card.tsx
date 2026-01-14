@@ -82,35 +82,47 @@ export function GameCard({
       <View className="relative w-full h-full">
         {/* Front of card (hidden when flipped) */}
         <Animated.View
-          style={frontAnimatedStyle}
-          className={`
-            absolute inset-0
-            items-center justify-center
-            rounded-xl
-            bg-primary-600
-            border-2 border-primary-400
-            shadow-lg
-          `}
+          style={[
+            frontAnimatedStyle,
+            {
+              shadowColor: "#9CB5A2",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 3,
+            },
+          ]}
+          className="absolute inset-0 items-center justify-center rounded-2xl bg-warm-peach border-2 border-soft-charcoal/10"
         >
-          <Text className="text-4xl text-primary-200">?</Text>
+          <View className="w-10 h-10 items-center justify-center rounded-full bg-soft-charcoal/10">
+            <Text className="text-2xl">🎵</Text>
+          </View>
         </Animated.View>
 
         {/* Back of card (shown when flipped) */}
         <Animated.View
-          style={backAnimatedStyle}
+          style={[
+            backAnimatedStyle,
+            {
+              shadowColor: card.isMatched ? "#9CB5A2" : "#7DA7C9",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 3,
+            },
+          ]}
           className={`
             absolute inset-0
             items-center justify-center
-            rounded-xl
-            shadow-lg
-            ${card.isMatched ? "bg-green-500 border-green-400" : "bg-white border-gray-200"}
+            rounded-2xl
             border-2
+            ${card.isMatched ? "bg-warm-sage border-warm-sage" : "bg-white border-soft-charcoal/10"}
           `}
         >
           <Text
             className={`
               text-xl font-bold text-center px-1
-              ${card.isMatched ? "text-white" : "text-gray-800"}
+              ${card.isMatched ? "text-white" : "text-warm-blue"}
             `}
             numberOfLines={2}
             adjustsFontSizeToFit
