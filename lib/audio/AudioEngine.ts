@@ -1,11 +1,12 @@
 import { Audio, AVPlaybackSource } from "expo-av";
-import { NOTE_NAMES } from "../../constants/Config";
+import { NOTE_NAMES, PITCH_RANGE } from "../../constants/Config";
 
 type SoundCache = Map<string, Audio.Sound>;
 
 class AudioEngineClass {
   private soundCache: SoundCache = new Map();
   private isInitialized = false;
+  private isPreloaded = false;
 
   // Convert MIDI note to filename key (e.g., 60 -> "C4", 61 -> "Cs4")
   getMidiFileName(midiNote: number): string {
@@ -92,6 +93,28 @@ class AudioEngineClass {
     await this.playSound("fanfare");
   }
 
+  // Preload all note sounds and effect sounds
+  async preloadAllSounds(): Promise<void> {
+    if (this.isPreloaded) return;
+
+    try {
+      const { SOUND_FILES } = await import("../../assets/sounds/index");
+
+      // Preload all sounds
+      const preloadPromises = Object.entries(SOUND_FILES).map(
+        async ([key, source]) => {
+          await this.preloadSound(key, source);
+        }
+      );
+
+      await Promise.all(preloadPromises);
+      this.isPreloaded = true;
+      console.log("All audio files preloaded successfully");
+    } catch (error) {
+      console.warn("Failed to preload audio files:", error);
+    }
+  }
+
   // Cleanup all sounds
   async cleanup(): Promise<void> {
     for (const sound of this.soundCache.values()) {
@@ -103,6 +126,7 @@ class AudioEngineClass {
     }
     this.soundCache.clear();
     this.isInitialized = false;
+    this.isPreloaded = false;
   }
 }
 
