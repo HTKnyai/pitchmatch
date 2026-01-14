@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Melody Memory",
+    "slug": "melody-memory",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "melody-memory",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0ea5e9"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.melodymemory.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0ea5e9"
+      },
+      "package": "com.melodymemory.app",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}

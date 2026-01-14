@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:code.claude.com)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(npx create-expo-app@latest . --template blank-typescript --yes)",
+      "Bash(pnpm install)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 30 pnpm start:*)",
+      "Bash(npx expo:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(pnpm list:*)",
+      "WebSearch",
+      "WebFetch(domain:kasata.medium.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
