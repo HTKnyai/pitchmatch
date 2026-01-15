@@ -20,10 +20,10 @@ export function CardGrid({
   const { rows, cols } = gridLayout;
 
   // Calculate gap based on grid size
-  const gap = cols > 4 ? 2 : 3;
+  const gap = cols > 4 ? 3 : 4;
 
   return (
-    <View className="w-full px-2">
+    <View className="w-full px-4">
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <View
           key={rowIndex}
@@ -40,7 +40,7 @@ export function CardGrid({
               <View
                 key={card.id}
                 style={{
-                  width: `${100 / cols - 2}%`,
+                  width: `${100 / cols - 1}%`,
                   marginHorizontal: gap,
                 }}
               >

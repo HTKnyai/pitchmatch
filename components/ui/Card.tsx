@@ -85,6 +85,11 @@ export function GameCard({
           style={[
             frontAnimatedStyle,
             {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
               shadowColor: "#9CB5A2",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
@@ -92,10 +97,10 @@ export function GameCard({
               elevation: 3,
             },
           ]}
-          className="absolute inset-0 items-center justify-center rounded-2xl bg-warm-peach border-2 border-soft-charcoal/10"
+          className="items-center justify-center rounded-2xl bg-warm-peach border-2 border-soft-charcoal/10"
         >
-          <View className="w-10 h-10 items-center justify-center rounded-full bg-soft-charcoal/10">
-            <Text className="text-2xl">🎵</Text>
+          <View className="w-12 h-12 items-center justify-center rounded-full bg-soft-charcoal/10">
+            <Text className="text-3xl">🎵</Text>
           </View>
         </Animated.View>
 
@@ -104,6 +109,11 @@ export function GameCard({
           style={[
             backAnimatedStyle,
             {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
               shadowColor: card.isMatched ? "#9CB5A2" : "#7DA7C9",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
@@ -112,7 +122,6 @@ export function GameCard({
             },
           ]}
           className={`
-            absolute inset-0
             items-center justify-center
             rounded-2xl
             border-2
@@ -121,7 +130,7 @@ export function GameCard({
         >
           <Text
             className={`
-              text-xl font-bold text-center px-1
+              text-2xl font-bold text-center px-2
               ${card.isMatched ? "text-white" : "text-warm-blue"}
             `}
             numberOfLines={2}
