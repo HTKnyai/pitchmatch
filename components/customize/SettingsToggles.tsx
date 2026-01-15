@@ -26,20 +26,20 @@ export function SettingsToggles({
   onExtendedRulesChange,
 }: SettingsTogglesProps) {
   return (
-    <View className="bg-primary-800/50 rounded-xl p-4">
+    <View className="bg-white/40 rounded-2xl p-4 border border-soft-charcoal/10">
       {/* Notation selector */}
       <View className="mb-4">
-        <Text className="text-white text-base font-medium mb-2">Notation</Text>
-        <View className="flex-row bg-primary-800 rounded-lg p-1">
+        <Text className="text-soft-charcoal text-base font-medium mb-2">Notation</Text>
+        <View className="flex-row bg-white/60 rounded-xl p-1 border border-soft-charcoal/10">
           <Pressable
             onPress={() => onNotationChange("doremi")}
-            className={`flex-1 py-2 rounded-md items-center ${
-              notation === "doremi" ? "bg-primary-500" : ""
+            className={`flex-1 py-2 rounded-lg items-center ${
+              notation === "doremi" ? "bg-warm-blue" : ""
             }`}
           >
             <Text
               className={`font-bold ${
-                notation === "doremi" ? "text-white" : "text-primary-300"
+                notation === "doremi" ? "text-white" : "text-soft-charcoal/60"
               }`}
             >
               Do Re Mi
@@ -47,13 +47,13 @@ export function SettingsToggles({
           </Pressable>
           <Pressable
             onPress={() => onNotationChange("abc")}
-            className={`flex-1 py-2 rounded-md items-center ${
-              notation === "abc" ? "bg-primary-500" : ""
+            className={`flex-1 py-2 rounded-lg items-center ${
+              notation === "abc" ? "bg-warm-blue" : ""
             }`}
           >
             <Text
               className={`font-bold ${
-                notation === "abc" ? "text-white" : "text-primary-300"
+                notation === "abc" ? "text-white" : "text-soft-charcoal/60"
               }`}
             >
               A B C
@@ -62,7 +62,7 @@ export function SettingsToggles({
         </View>
       </View>
 
-      <View className="border-t border-primary-700 pt-2">
+      <View className="border-t border-soft-charcoal/10 pt-2">
         {gameMode === "pitch" && (
           <ToggleSwitch
             label="Show Octave"

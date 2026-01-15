@@ -16,8 +16,16 @@ export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
       statusBarTranslucent
     >
       <View className="flex-1 items-center justify-center bg-black/70">
-        <View className="bg-primary-800 rounded-2xl p-8 mx-8 items-center shadow-2xl">
-          <Text className="text-white text-3xl font-bold mb-8">PAUSE</Text>
+        <View className="bg-cream rounded-3xl p-8 mx-8 items-center border border-soft-charcoal/10"
+          style={{
+            shadowColor: "#4A4A4A",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.15,
+            shadowRadius: 12,
+            elevation: 10,
+          }}
+        >
+          <Text className="text-soft-charcoal text-3xl font-bold mb-8">PAUSE</Text>
 
           <View className="gap-4 w-full">
             <Button

@@ -8,11 +8,11 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GameProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: "#0c4a6e" },
+            contentStyle: { backgroundColor: "#FAF9F6" },
             animation: "slide_from_right",
           }}
         />

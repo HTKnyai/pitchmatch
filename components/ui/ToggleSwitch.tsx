@@ -38,15 +38,15 @@ export function ToggleSwitch({
       className="flex-row items-center justify-between py-3"
     >
       <View className="flex-1 mr-4">
-        <Text className="text-white text-base font-medium">{label}</Text>
+        <Text className="text-soft-charcoal text-base font-medium">{label}</Text>
         {description && (
-          <Text className="text-primary-200 text-sm mt-1">{description}</Text>
+          <Text className="text-soft-charcoal/60 text-sm mt-1">{description}</Text>
         )}
       </View>
       <View
         className={`
           w-12 h-7 rounded-full p-1
-          ${value ? "bg-primary-400" : "bg-gray-500"}
+          ${value ? "bg-warm-sage" : "bg-soft-charcoal/20"}
         `}
       >
         <Animated.View

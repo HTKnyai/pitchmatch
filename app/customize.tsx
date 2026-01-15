@@ -47,12 +47,12 @@ export default function CustomizeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-900">
+    <SafeAreaView className="flex-1 bg-cream">
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
         {/* Header */}
         <View className="flex-row items-center mb-6">
-          <Button title="Back" onPress={handleBack} variant="ghost" size="sm" />
-          <Text className="text-white text-xl font-bold flex-1 text-center mr-12">
+          <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
+          <Text className="text-soft-charcoal text-xl font-bold flex-1 text-center mr-16">
             {config.playerCount === 1 ? "1 Player" : "2 Players"}
           </Text>
         </View>
@@ -67,7 +67,7 @@ export default function CustomizeScreen() {
         />
 
         {/* Settings */}
-        <Text className="text-white text-lg font-bold mb-3">Settings</Text>
+        <Text className="text-soft-charcoal text-lg font-bold mb-3">Settings</Text>
         <SettingsToggles
           notation={config.notation}
           showOctave={config.showOctave}
@@ -82,7 +82,7 @@ export default function CustomizeScreen() {
       </ScrollView>
 
       {/* Start button */}
-      <View className="p-4 bg-primary-900">
+      <View className="p-4 bg-cream border-t border-soft-charcoal/5">
         <Button
           title="Start Game"
           onPress={handleStart}

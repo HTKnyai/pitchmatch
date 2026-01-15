@@ -86,7 +86,7 @@ export default function GameScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-900" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-cream" edges={["top"]}>
       <GameHeader
         gameState={state}
         config={state.config}
