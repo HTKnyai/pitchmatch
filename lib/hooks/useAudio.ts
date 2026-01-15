@@ -8,9 +8,8 @@ export function useAudio() {
     const init = async () => {
       if (!isInitializedRef.current) {
         await AudioEngine.initialize();
+        await AudioEngine.preloadAllSounds();
         isInitializedRef.current = true;
-        // TODO: Preload sounds when sample files are added
-        // await preloadAllSounds();
       }
     };
 
