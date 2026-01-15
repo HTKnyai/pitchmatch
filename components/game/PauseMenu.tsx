@@ -1,5 +1,8 @@
 import { View, Text, Modal, Pressable } from "react-native";
+import Slider from "@react-native-community/slider";
 import { Button } from "../ui/Button";
+import { useState, useEffect } from "react";
+import { useAudio } from "../../lib/hooks/useAudio";
 
 type PauseMenuProps = {
   visible: boolean;
@@ -8,6 +11,19 @@ type PauseMenuProps = {
 };
 
 export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
+  const { getVolume, setVolume } = useAudio();
+  const [volume, setVolumeState] = useState(0.7);
+
+  useEffect(() => {
+    if (visible) {
+      setVolumeState(getVolume());
+    }
+  }, [visible, getVolume]);
+
+  const handleVolumeChange = async (value: number) => {
+    setVolumeState(value);
+    await setVolume(value);
+  };
   return (
     <Modal
       visible={visible}
@@ -28,6 +44,24 @@ export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
           <Text className="text-soft-charcoal text-3xl font-bold mb-8">PAUSE</Text>
 
           <View className="gap-4 w-full">
+            {/* Volume Control */}
+            <View className="w-full mb-4">
+              <View className="flex-row items-center justify-between mb-2">
+                <Text className="text-soft-charcoal text-lg font-semibold">音量</Text>
+                <Text className="text-soft-charcoal text-sm">{Math.round(volume * 100)}%</Text>
+              </View>
+              <Slider
+                style={{ width: "100%", height: 40 }}
+                minimumValue={0}
+                maximumValue={1}
+                value={volume}
+                onValueChange={handleVolumeChange}
+                minimumTrackTintColor="#7DA7C9"
+                maximumTrackTintColor="#D8D4C8"
+                thumbTintColor="#7DA7C9"
+              />
+            </View>
+
             <Button
               title="Resume"
               onPress={onResume}

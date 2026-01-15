@@ -40,11 +40,21 @@ export function useAudio() {
     await AudioEngine.playFanfare();
   }, []);
 
+  const getVolume = useCallback(() => {
+    return AudioEngine.getVolume();
+  }, []);
+
+  const setVolume = useCallback(async (volume: number) => {
+    await AudioEngine.setVolume(volume);
+  }, []);
+
   return {
     playNote,
     playChord,
     playSuccess,
     playFail,
     playFanfare,
+    getVolume,
+    setVolume,
   };
 }

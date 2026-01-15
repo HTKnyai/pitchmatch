@@ -59,9 +59,9 @@ export default function GameScreen() {
         const result = checkMatch();
 
         if (result.isMatch) {
-          await playSuccess();
+          // await playSuccess();
         } else {
-          await playFail();
+          // await playFail();
           // Wait before flipping cards back
           setTimeout(() => {
             resetFlipped();

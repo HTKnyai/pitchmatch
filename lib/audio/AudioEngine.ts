@@ -1,12 +1,17 @@
 import { Audio, AVPlaybackSource } from "expo-av";
 import { NOTE_NAMES, PITCH_RANGE } from "../../constants/Config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SoundCache = Map<string, Audio.Sound>;
+
+const VOLUME_STORAGE_KEY = "@melody_memory/volume";
+const DEFAULT_VOLUME = 0.7;
 
 class AudioEngineClass {
   private soundCache: SoundCache = new Map();
   private isInitialized = false;
   private isPreloaded = false;
+  private volume: number = DEFAULT_VOLUME;
 
   // Convert MIDI note to filename key (e.g., 60 -> "C4", 61 -> "Cs4")
   getMidiFileName(midiNote: number): string {
@@ -32,9 +37,54 @@ class AudioEngineClass {
         staysActiveInBackground: false,
         shouldDuckAndroid: true,
       });
+      // Load saved volume
+      await this.loadVolume();
       this.isInitialized = true;
     } catch (error) {
       console.warn("Failed to initialize audio:", error);
+    }
+  }
+
+  // Get current volume
+  getVolume(): number {
+    return this.volume;
+  }
+
+  // Set volume (0.0 to 1.0)
+  async setVolume(volume: number): Promise<void> {
+    this.volume = Math.max(0, Math.min(1, volume));
+
+    // Update all loaded sounds
+    for (const sound of this.soundCache.values()) {
+      try {
+        await sound.setVolumeAsync(this.volume);
+      } catch (error) {
+        console.warn("Failed to set volume for sound:", error);
+      }
+    }
+
+    // Save to storage
+    await this.saveVolume();
+  }
+
+  // Load volume from storage
+  private async loadVolume(): Promise<void> {
+    try {
+      const savedVolume = await AsyncStorage.getItem(VOLUME_STORAGE_KEY);
+      if (savedVolume !== null) {
+        this.volume = parseFloat(savedVolume);
+      }
+    } catch (error) {
+      console.warn("Failed to load volume:", error);
+    }
+  }
+
+  // Save volume to storage
+  private async saveVolume(): Promise<void> {
+    try {
+      await AsyncStorage.setItem(VOLUME_STORAGE_KEY, this.volume.toString());
+    } catch (error) {
+      console.warn("Failed to save volume:", error);
     }
   }
 
@@ -46,6 +96,7 @@ class AudioEngineClass {
       }
       const { sound } = await Audio.Sound.createAsync(source, {
         shouldPlay: false,
+        volume: this.volume,
       });
       this.soundCache.set(key, sound);
     } catch (error) {
