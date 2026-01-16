@@ -31,27 +31,13 @@ export default function GameScreen() {
     }
   }, []);
 
-  const handleCardPress = async (card: Card) => {
+  // Check for match when two cards are flipped
+  useEffect(() => {
     if (
-      isCheckingRef.current ||
-      state.flippedCards.length >= 2 ||
-      state.gameStatus !== "playing"
+      state.flippedCards.length === 2 &&
+      !isCheckingRef.current &&
+      state.gameStatus === "playing"
     ) {
-      return;
-    }
-
-    // Flip the card
-    flipCard(card);
-
-    // Play the sound
-    if (card.mode === "pitch") {
-      await playNote((card as PitchCard).pitch);
-    } else {
-      await playChord((card as ChordCard).pitches);
-    }
-
-    // Check for match after second card
-    if (state.flippedCards.length === 1) {
       isCheckingRef.current = true;
 
       // Small delay to let the flip animation complete
@@ -70,6 +56,26 @@ export default function GameScreen() {
 
         isCheckingRef.current = false;
       }, ANIMATION.flipDuration + 100);
+    }
+  }, [state.flippedCards, state.gameStatus, checkMatch, resetFlipped]);
+
+  const handleCardPress = async (card: Card) => {
+    if (
+      isCheckingRef.current ||
+      state.flippedCards.length >= 2 ||
+      state.gameStatus !== "playing"
+    ) {
+      return;
+    }
+
+    // Flip the card
+    flipCard(card);
+
+    // Play the sound
+    if (card.mode === "pitch") {
+      await playNote((card as PitchCard).pitch);
+    } else {
+      await playChord((card as ChordCard).pitches);
     }
   };
 
