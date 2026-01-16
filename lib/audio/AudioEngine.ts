@@ -34,8 +34,11 @@ class AudioEngineClass {
     try {
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
+        allowsRecordingIOS: false,
         staysActiveInBackground: false,
         shouldDuckAndroid: true,
+        interruptionModeIOS: 2, // DoNotMix
+        interruptionModeAndroid: 1, // DuckOthers
       });
       // Load saved volume
       await this.loadVolume();
