@@ -1,8 +1,8 @@
-import { Audio, AVPlaybackSource } from "expo-av";
+import { AudioPlayer, createAudioPlayer, setAudioModeAsync, AudioMode } from "expo-audio";
 import { NOTE_NAMES, PITCH_RANGE } from "../../constants/Config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type SoundCache = Map<string, Audio.Sound>;
+type SoundCache = Map<string, AudioPlayer>;
 
 const VOLUME_STORAGE_KEY = "@melody_memory/volume";
 const DEFAULT_VOLUME = 0.7;
@@ -32,13 +32,10 @@ class AudioEngineClass {
     if (this.isInitialized) return;
 
     try {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        allowsRecordingIOS: false,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-        interruptionModeIOS: 2, // DoNotMix
-        interruptionModeAndroid: 1, // DuckOthers
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        allowsRecording: false,
+        shouldPlayInBackground: false,
       });
       // Load saved volume
       await this.loadVolume();
@@ -58,9 +55,9 @@ class AudioEngineClass {
     this.volume = Math.max(0, Math.min(1, volume));
 
     // Update all loaded sounds
-    for (const sound of this.soundCache.values()) {
+    for (const player of this.soundCache.values()) {
       try {
-        await sound.setVolumeAsync(this.volume);
+        player.volume = this.volume;
       } catch (error) {
         console.warn("Failed to set volume for sound:", error);
       }
@@ -92,16 +89,14 @@ class AudioEngineClass {
   }
 
   // Preload a specific sound file
-  async preloadSound(key: string, source: AVPlaybackSource): Promise<void> {
+  async preloadSound(key: string, source: number): Promise<void> {
     try {
       if (this.soundCache.has(key)) {
         return;
       }
-      const { sound } = await Audio.Sound.createAsync(source, {
-        shouldPlay: false,
-        volume: this.volume,
-      });
-      this.soundCache.set(key, sound);
+      const player = await createAudioPlayer(source);
+      player.volume = this.volume;
+      this.soundCache.set(key, player);
     } catch (error) {
       console.warn(`Failed to preload sound ${key}:`, error);
     }
@@ -109,11 +104,11 @@ class AudioEngineClass {
 
   // Play a preloaded sound
   async playSound(key: string): Promise<void> {
-    const sound = this.soundCache.get(key);
-    if (sound) {
+    const player = this.soundCache.get(key);
+    if (player) {
       try {
-        await sound.setPositionAsync(0);
-        await sound.playAsync();
+        player.currentTime = 0;
+        player.play();
       } catch (error) {
         console.warn(`Failed to play sound ${key}:`, error);
       }
@@ -171,9 +166,9 @@ class AudioEngineClass {
 
   // Cleanup all sounds
   async cleanup(): Promise<void> {
-    for (const sound of this.soundCache.values()) {
+    for (const player of this.soundCache.values()) {
       try {
-        await sound.unloadAsync();
+        player.remove();
       } catch (error) {
         // Ignore cleanup errors
       }
