@@ -100,19 +100,36 @@ function generatePitchCardsExact(pairCount: number): PitchCard[] {
 
 // Generate pitch cards for extended rules (octave match)
 function generatePitchCardsExtended(pairCount: number): PitchCard[] {
-  // Select random pitch classes (0-11)
+  // At least 1 octave-different pair, about half of total pairs
+  const octavePairCount = Math.max(1, Math.floor(pairCount / 2));
+  const exactPairCount = pairCount - octavePairCount;
+
+  const cards: PitchCard[] = [];
+
+  // Generate octave-different pairs (same pitch class, different octaves)
   const availablePitchClasses = Array.from({ length: 12 }, (_, i) => i);
-  const selectedPitchClasses = getRandomElements(
+  const selectedPitchClassesForOctave = getRandomElements(
     availablePitchClasses,
-    pairCount
+    octavePairCount
   );
 
-  // For each pitch class, select two different octaves
-  const cards: PitchCard[] = selectedPitchClasses.flatMap((pitchClass) => {
+  selectedPitchClassesForOctave.forEach((pitchClass) => {
     const octaves = getRandomElements(PITCH_RANGE.octaves as unknown as number[], 2);
     const midi1 = (octaves[0] + 1) * 12 + pitchClass;
     const midi2 = (octaves[1] + 1) * 12 + pitchClass;
-    return [createPitchCard(midi1), createPitchCard(midi2)];
+    cards.push(createPitchCard(midi1), createPitchCard(midi2));
+  });
+
+  // Generate exact match pairs (same pitch)
+  const availablePitches: number[] = [];
+  for (let midi = PITCH_RANGE.min; midi <= PITCH_RANGE.max; midi++) {
+    availablePitches.push(midi);
+  }
+
+  const selectedPitchesForExact = getRandomElements(availablePitches, exactPairCount);
+
+  selectedPitchesForExact.forEach((pitch) => {
+    cards.push(createPitchCard(pitch), createPitchCard(pitch));
   });
 
   return shuffle(cards);
