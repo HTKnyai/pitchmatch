@@ -48,6 +48,7 @@ export type PlayerState = {
   score: number;
   matchedPairs: number;
   attempts: number;
+  comboCount: number;
 };
 
 // Game Status

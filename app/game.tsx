@@ -1,10 +1,12 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CardGrid } from "../components/game/CardGrid";
 import { GameHeader } from "../components/game/GameHeader";
 import { PauseMenu } from "../components/game/PauseMenu";
+import { TurnIndicator } from "../components/game/TurnIndicator";
+import { ScorePopup } from "../components/game/ScorePopup";
 import { useGame } from "../lib/context/GameContext";
 import { useAudio } from "../lib/hooks/useAudio";
 import type { Card, PitchCard, ChordCard } from "../lib/types/game.types";
@@ -16,6 +18,26 @@ export default function GameScreen() {
     useGame();
   const { playNote, playChord, playSuccess, playFail } = useAudio();
   const isCheckingRef = useRef(false);
+
+  // Track previous player for turn transition
+  const [previousPlayer, setPreviousPlayer] = useState<1 | 2 | null>(null);
+  const previousPlayerRef = useRef<1 | 2>(state.currentPlayer);
+
+  // Score popup state
+  const [scorePopup, setScorePopup] = useState<{
+    visible: boolean;
+    points: number;
+    comboCount: number;
+    multiplier: number;
+  }>({ visible: false, points: 0, comboCount: 0, multiplier: 1 });
+
+  // Track player changes for turn indicator
+  useEffect(() => {
+    if (previousPlayerRef.current !== state.currentPlayer) {
+      setPreviousPlayer(previousPlayerRef.current);
+      previousPlayerRef.current = state.currentPlayer;
+    }
+  }, [state.currentPlayer]);
 
   // Navigate to result when game finishes
   useEffect(() => {
@@ -45,16 +67,28 @@ export default function GameScreen() {
         const result = checkMatch();
 
         if (result.isMatch) {
-          // await playSuccess();
+          // Show score popup with combo info
+          setScorePopup({
+            visible: true,
+            points: result.points,
+            comboCount: result.comboCount,
+            multiplier: result.multiplier,
+          });
+
+          // Hide popup after duration
+          setTimeout(() => {
+            setScorePopup((prev) => ({ ...prev, visible: false }));
+          }, ANIMATION.scorePopupDuration);
+
+          isCheckingRef.current = false;
         } else {
-          // await playFail();
           // Wait before flipping cards back
+          // Keep isCheckingRef true until cards are reset to prevent re-triggering
           setTimeout(() => {
             resetFlipped();
+            isCheckingRef.current = false;
           }, ANIMATION.matchFailureDuration);
         }
-
-        isCheckingRef.current = false;
       }, ANIMATION.flipDuration + 100);
     }
   }, [state.flippedCards, state.gameStatus, checkMatch, resetFlipped]);
@@ -109,6 +143,22 @@ export default function GameScreen() {
           }
         />
       </View>
+
+      {/* Turn transition indicator */}
+      <TurnIndicator
+        currentPlayer={state.currentPlayer}
+        previousPlayer={previousPlayer}
+        isTwoPlayer={state.config.playerCount === 2}
+      />
+
+      {/* Score popup with combo info */}
+      {scorePopup.visible && (
+        <ScorePopup
+          points={scorePopup.points}
+          comboCount={scorePopup.comboCount}
+          multiplier={scorePopup.multiplier}
+        />
+      )}
 
       <PauseMenu
         visible={state.gameStatus === "paused"}

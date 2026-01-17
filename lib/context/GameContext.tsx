@@ -13,13 +13,14 @@ import type {
 } from "../types/game.types";
 import { generateCards } from "../game/CardGenerator";
 import { validateMatch } from "../game/MatchValidator";
-import { DEFAULT_CONFIG } from "../../constants/Config";
+import { DEFAULT_CONFIG, COMBO } from "../../constants/Config";
 
 // Initial player state
 const initialPlayerState: PlayerState = {
   score: 0,
   matchedPairs: 0,
   attempts: 0,
+  comboCount: 0,
 };
 
 // Initial game state
@@ -121,6 +122,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         `player${state.currentPlayer}` as keyof typeof state.players;
 
       if (result.isMatch) {
+        // Calculate combo multiplier
+        const currentCombo = state.players[currentPlayerKey].comboCount;
+        const newCombo = currentCombo + 1;
+        const multiplier =
+          COMBO.baseMultiplier + (newCombo - 1) * COMBO.incrementPerCombo;
+        const adjustedPoints = Math.round(result.points * multiplier);
+
         // Mark cards as matched
         const updatedCards = state.cards.map((c) =>
           c.id === card1.id || c.id === card2.id ? { ...c, isMatched: true } : c
@@ -138,16 +146,17 @@ function gameReducer(state: GameState, action: GameAction): GameState {
             ...state.players,
             [currentPlayerKey]: {
               ...state.players[currentPlayerKey],
-              score: state.players[currentPlayerKey].score + result.points,
+              score: state.players[currentPlayerKey].score + adjustedPoints,
               matchedPairs: state.players[currentPlayerKey].matchedPairs + 1,
               attempts: state.players[currentPlayerKey].attempts + 1,
+              comboCount: newCombo,
             },
           },
           gameStatus: isGameComplete ? "finished" : state.gameStatus,
           endTime: isGameComplete ? Date.now() : state.endTime,
         };
       } else {
-        // No match - update attempts and switch player in 2-player mode
+        // No match - reset combo and switch player in 2-player mode
         const nextPlayer =
           state.config.playerCount === 2
             ? state.currentPlayer === 1
@@ -162,6 +171,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
             [currentPlayerKey]: {
               ...state.players[currentPlayerKey],
               attempts: state.players[currentPlayerKey].attempts + 1,
+              comboCount: 0,
             },
           },
           currentPlayer: nextPlayer as 1 | 2,
@@ -213,13 +223,22 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+// Match result type for checkMatch callback
+type CheckMatchResult = {
+  isMatch: boolean;
+  points: number;
+  comboCount: number;
+  multiplier: number;
+  basePoints: number;
+};
+
 // Context type
 type GameContextType = {
   state: GameState;
   setConfig: (config: GameConfig) => void;
   startGame: () => void;
   flipCard: (card: Card) => void;
-  checkMatch: () => { isMatch: boolean; points: number };
+  checkMatch: () => CheckMatchResult;
   resetFlipped: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
@@ -244,18 +263,45 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "FLIP_CARD", card });
   }, []);
 
-  const checkMatch = useCallback(() => {
+  const checkMatch = useCallback((): CheckMatchResult => {
     if (state.flippedCards.length !== 2) {
-      return { isMatch: false, points: 0 };
+      return {
+        isMatch: false,
+        points: 0,
+        comboCount: 0,
+        multiplier: 1,
+        basePoints: 0,
+      };
     }
 
     const [card1, card2] = state.flippedCards;
     const result = validateMatch(card1, card2, state.config);
 
+    const currentPlayerKey =
+      `player${state.currentPlayer}` as keyof typeof state.players;
+    const currentCombo = state.players[currentPlayerKey].comboCount;
+
+    let comboCount = 0;
+    let multiplier = 1;
+    let adjustedPoints = 0;
+
+    if (result.isMatch) {
+      comboCount = currentCombo + 1;
+      multiplier =
+        COMBO.baseMultiplier + (comboCount - 1) * COMBO.incrementPerCombo;
+      adjustedPoints = Math.round(result.points * multiplier);
+    }
+
     dispatch({ type: "CHECK_MATCH" });
 
-    return { isMatch: result.isMatch, points: result.points };
-  }, [state.flippedCards, state.config]);
+    return {
+      isMatch: result.isMatch,
+      points: adjustedPoints,
+      comboCount,
+      multiplier,
+      basePoints: result.points,
+    };
+  }, [state.flippedCards, state.config, state.players, state.currentPlayer]);
 
   const resetFlipped = useCallback(() => {
     dispatch({ type: "RESET_FLIPPED" });

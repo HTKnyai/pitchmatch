@@ -73,6 +73,14 @@ export const ANIMATION = {
   matchSuccessDuration: 500,
   matchFailureDuration: 800,
   scorePopupDuration: 600,
+  turnTransitionDuration: 400,
+  turnNotificationDuration: 1500,
+} as const;
+
+// Combo settings
+export const COMBO = {
+  baseMultiplier: 1.0,
+  incrementPerCombo: 0.5,
 } as const;
 
 // Storage keys
