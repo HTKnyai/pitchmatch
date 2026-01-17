@@ -100,35 +100,34 @@ function generatePitchCardsExact(pairCount: number): PitchCard[] {
 
 // Generate pitch cards for extended rules (octave match)
 function generatePitchCardsExtended(pairCount: number): PitchCard[] {
-  // At least 1 octave-different pair, about half of total pairs
-  const octavePairCount = Math.max(1, Math.floor(pairCount / 2));
-  const exactPairCount = pairCount - octavePairCount;
-
   const cards: PitchCard[] = [];
+  const usedPitches = new Set<number>();
 
-  // Generate octave-different pairs (same pitch class, different octaves)
-  const availablePitchClasses = Array.from({ length: 12 }, (_, i) => i);
-  const selectedPitchClassesForOctave = getRandomElements(
-    availablePitchClasses,
-    octavePairCount
-  );
+  // Step 1: Generate at least one octave-different same-pitch-class pair
+  // Select a random pitch class (0-11)
+  const pitchClass = Math.floor(Math.random() * 12);
+  // Select two different octaves
+  const octaves = getRandomElements(PITCH_RANGE.octaves as unknown as number[], 2);
+  const midi1 = (octaves[0] + 1) * 12 + pitchClass;
+  const midi2 = (octaves[1] + 1) * 12 + pitchClass;
 
-  selectedPitchClassesForOctave.forEach((pitchClass) => {
-    const octaves = getRandomElements(PITCH_RANGE.octaves as unknown as number[], 2);
-    const midi1 = (octaves[0] + 1) * 12 + pitchClass;
-    const midi2 = (octaves[1] + 1) * 12 + pitchClass;
-    cards.push(createPitchCard(midi1), createPitchCard(midi2));
-  });
+  // Add two pairs with the same pitch each
+  cards.push(createPitchCard(midi1), createPitchCard(midi1));
+  cards.push(createPitchCard(midi2), createPitchCard(midi2));
+  usedPitches.add(midi1);
+  usedPitches.add(midi2);
 
-  // Generate exact match pairs (same pitch)
+  // Step 2: Generate remaining pairs with random pitches
+  const remainingPairs = pairCount - 2; // We already created 2 pairs
   const availablePitches: number[] = [];
   for (let midi = PITCH_RANGE.min; midi <= PITCH_RANGE.max; midi++) {
-    availablePitches.push(midi);
+    if (!usedPitches.has(midi)) {
+      availablePitches.push(midi);
+    }
   }
 
-  const selectedPitchesForExact = getRandomElements(availablePitches, exactPairCount);
-
-  selectedPitchesForExact.forEach((pitch) => {
+  const selectedPitches = getRandomElements(availablePitches, remainingPairs);
+  selectedPitches.forEach((pitch) => {
     cards.push(createPitchCard(pitch), createPitchCard(pitch));
   });
 
