@@ -20,10 +20,14 @@ export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
     }
   }, [visible, getVolume]);
 
-  const handleVolumeChange = async (value: number) => {
+  const handleVolumeChange = (value: number) => {
     setVolumeState(value);
+  };
+
+  const handleVolumeChangeComplete = async (value: number) => {
     await setVolume(value);
   };
+
   return (
     <Modal
       visible={visible}
@@ -45,17 +49,18 @@ export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
 
           <View className="gap-4 w-full">
             {/* Volume Control */}
-            <View className="w-full mb-4">
+            <View className="w-full mb-4" style={{ minWidth: 250 }}>
               <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-soft-charcoal text-lg font-semibold">音量</Text>
                 <Text className="text-soft-charcoal text-sm">{Math.round(volume * 100)}%</Text>
               </View>
               <Slider
-                style={{ width: "100%", height: 40 }}
+                style={{ width: 250, height: 40 }}
                 minimumValue={0}
                 maximumValue={1}
                 value={volume}
                 onValueChange={handleVolumeChange}
+                onSlidingComplete={handleVolumeChangeComplete}
                 minimumTrackTintColor="#7DA7C9"
                 maximumTrackTintColor="#D8D4C8"
                 thumbTintColor="#7DA7C9"

@@ -15,7 +15,10 @@
       "Bash(xargs kill:*)",
       "Bash(pnpm list:*)",
       "WebSearch",
-      "WebFetch(domain:kasata.medium.com)"
+      "WebFetch(domain:kasata.medium.com)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
