@@ -6,11 +6,12 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from "react-native-reanimated";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Card as CardType } from "../../lib/types/game.types";
 import { formatCard } from "../../utils/format";
 import type { Notation } from "../../lib/types/game.types";
 import { ANIMATION } from "../../constants/Config";
+import { Sparkle } from "../icons";
 
 // Card icon image (treble clef from title image)
 const cardIconImage = require("../../assets/images/melodymemory_title.jpeg");
@@ -33,6 +34,51 @@ const CARD_COLORS = [
   { bg: "#FFF8E7", border: "#F5E8C4" }, // Cream
 ];
 
+// L-shaped corner decoration component
+function CornerDecoration({ position }: { position: "topLeft" | "topRight" | "bottomLeft" | "bottomRight" }) {
+  const isTop = position.includes("top");
+  const isLeft = position.includes("Left");
+
+  return (
+    <View
+      style={[
+        styles.cornerContainer,
+        {
+          top: isTop ? 6 : undefined,
+          bottom: !isTop ? 6 : undefined,
+          left: isLeft ? 6 : undefined,
+          right: !isLeft ? 6 : undefined,
+        },
+      ]}
+    >
+      {/* Horizontal line */}
+      <View
+        style={[
+          styles.cornerLineHorizontal,
+          {
+            top: isTop ? 0 : undefined,
+            bottom: !isTop ? 0 : undefined,
+            left: isLeft ? 0 : undefined,
+            right: !isLeft ? 0 : undefined,
+          },
+        ]}
+      />
+      {/* Vertical line */}
+      <View
+        style={[
+          styles.cornerLineVertical,
+          {
+            top: isTop ? 0 : undefined,
+            bottom: !isTop ? 0 : undefined,
+            left: isLeft ? 0 : undefined,
+            right: !isLeft ? 0 : undefined,
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
 export function GameCard({
   card,
   cardIndex,
@@ -43,6 +89,7 @@ export function GameCard({
   disabled = false,
 }: GameCardProps) {
   const rotation = useSharedValue(0);
+  const [imageError, setImageError] = useState(false);
 
   // Get color based on card index
   const colorSet = CARD_COLORS[cardIndex % CARD_COLORS.length];
@@ -99,19 +146,34 @@ export function GameCard({
           style={[
             frontAnimatedStyle,
             styles.cardFace,
+            styles.cardFront,
             {
               backgroundColor: colorSet.bg,
-              borderColor: colorSet.border,
               shadowColor: "#9B7ED9",
             },
           ]}
         >
-          <View style={styles.iconContainer}>
-            <Image
-              source={cardIconImage}
-              style={styles.cardIcon}
-              resizeMode="cover"
-            />
+          {/* White border overlay */}
+          <View style={styles.whiteBorderOverlay}>
+            {/* L-shaped corner decorations */}
+            <CornerDecoration position="topLeft" />
+            <CornerDecoration position="topRight" />
+            <CornerDecoration position="bottomLeft" />
+            <CornerDecoration position="bottomRight" />
+
+            {/* Card image - now card-shaped instead of circular */}
+            <View style={styles.iconContainer}>
+              {imageError ? (
+                <Sparkle size={40} color={colorSet.border} />
+              ) : (
+                <Image
+                  source={cardIconImage}
+                  style={styles.cardIcon}
+                  resizeMode="cover"
+                  onError={() => setImageError(true)}
+                />
+              )}
+            </View>
           </View>
         </Animated.View>
 
@@ -128,16 +190,24 @@ export function GameCard({
             },
           ]}
         >
-          <Text
-            style={[
-              styles.cardText,
-              card.isMatched ? styles.cardTextMatched : styles.cardTextFlipped,
-            ]}
-            numberOfLines={2}
-            adjustsFontSizeToFit
-          >
-            {isBlindMode ? blindModeDisplay : displayText}
-          </Text>
+          {/* White border overlay for flipped card */}
+          <View style={[styles.whiteBorderOverlay, card.isMatched && styles.matchedBorderOverlay]}>
+            <CornerDecoration position="topLeft" />
+            <CornerDecoration position="topRight" />
+            <CornerDecoration position="bottomLeft" />
+            <CornerDecoration position="bottomRight" />
+
+            <Text
+              style={[
+                styles.cardText,
+                card.isMatched ? styles.cardTextMatched : styles.cardTextFlipped,
+              ]}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+            >
+              {isBlindMode ? blindModeDisplay : displayText}
+            </Text>
+          </View>
         </Animated.View>
       </View>
     </Pressable>
@@ -163,23 +233,62 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 16,
-    borderWidth: 2,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 5,
   },
+  cardFront: {
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+  },
   cardFlipped: {
     backgroundColor: "#FFFFFF",
-    borderColor: "rgba(74, 74, 74, 0.1)",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
   },
   cardMatched: {
     backgroundColor: "#9B7ED9",
-    borderColor: "#9B7ED9",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+  },
+  whiteBorderOverlay: {
+    position: "absolute",
+    top: 4,
+    left: 4,
+    right: 4,
+    bottom: 4,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  matchedBorderOverlay: {
+    borderColor: "rgba(255, 255, 255, 0.4)",
+  },
+  cornerContainer: {
+    position: "absolute",
+    width: 12,
+    height: 12,
+  },
+  cornerLineHorizontal: {
+    position: "absolute",
+    width: 12,
+    height: 2,
+    backgroundColor: "rgba(155, 126, 217, 0.5)",
+    borderRadius: 1,
+  },
+  cornerLineVertical: {
+    position: "absolute",
+    width: 2,
+    height: 12,
+    backgroundColor: "rgba(155, 126, 217, 0.5)",
+    borderRadius: 1,
   },
   cardText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
     textAlign: "center",
     paddingHorizontal: 8,
   },
@@ -190,15 +299,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 45,
+    borderRadius: 8,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   cardIcon: {
     width: 80,
-    height: 80,
+    height: 60,
   },
 });

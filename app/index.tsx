@@ -1,8 +1,10 @@
 import { View, Text, Pressable, StyleSheet, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { useGame } from "../lib/context/GameContext";
 import { PillButton } from "../components/ui/PillButton";
+import { GradientBackground } from "../components/ui/GradientBackground";
 import { Settings } from "../components/icons";
 
 const backgroundImage = require("../assets/images/melodymemory_title.jpeg");
@@ -10,6 +12,7 @@ const backgroundImage = require("../assets/images/melodymemory_title.jpeg");
 export default function TitleScreen() {
   const router = useRouter();
   const { setConfig, state } = useGame();
+  const [imageError, setImageError] = useState(false);
 
   const handleSinglePlayer = () => {
     setConfig({ ...state.config, playerCount: 1 });
@@ -25,59 +28,73 @@ export default function TitleScreen() {
     router.push("/ranking");
   };
 
+  const content = (
+    <SafeAreaView style={styles.container}>
+      {/* Settings button */}
+      <View style={styles.settingsContainer}>
+        <Pressable
+          style={styles.settingsButton}
+          onPress={() => {
+            // Settings functionality can be added later
+          }}
+        >
+          <Settings size={24} color="#9B7ED9" />
+        </Pressable>
+      </View>
+
+      {/* Spacer to push buttons to bottom */}
+      <View style={styles.spacer} />
+
+      {/* Menu buttons */}
+      <View style={styles.buttonContainer}>
+        <View style={styles.buttonRow}>
+          <PillButton
+            label="1 Player"
+            sublabel="Score Attack"
+            onPress={handleSinglePlayer}
+            variant="filled"
+          />
+          <PillButton
+            label="2 Players"
+            sublabel="Battle Mode"
+            onPress={handleTwoPlayer}
+            variant="filled"
+          />
+        </View>
+        <View style={styles.buttonRow}>
+          <PillButton
+            label="Rankings"
+            onPress={handleRanking}
+            variant="outlined"
+          />
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Crafted for musicians</Text>
+        <Text style={styles.footerDot}>v 1.0.0</Text>
+      </View>
+    </SafeAreaView>
+  );
+
+  // Fallback to gradient background if image fails to load
+  if (imageError) {
+    return (
+      <GradientBackground variant="title" style={styles.background}>
+        {content}
+      </GradientBackground>
+    );
+  }
+
   return (
     <ImageBackground
       source={backgroundImage}
       style={styles.background}
       resizeMode="cover"
+      onError={() => setImageError(true)}
     >
-      <SafeAreaView style={styles.container}>
-        {/* Settings button */}
-        <View style={styles.settingsContainer}>
-          <Pressable
-            style={styles.settingsButton}
-            onPress={() => {
-              // Settings functionality can be added later
-            }}
-          >
-            <Settings size={24} color="#9B7ED9" />
-          </Pressable>
-        </View>
-
-        {/* Spacer to push buttons to bottom */}
-        <View style={styles.spacer} />
-
-        {/* Menu buttons */}
-        <View style={styles.buttonContainer}>
-          <View style={styles.buttonRow}>
-            <PillButton
-              label="1 Player"
-              sublabel="Score Attack"
-              onPress={handleSinglePlayer}
-              variant="filled"
-            />
-            <PillButton
-              label="2 Players"
-              sublabel="Battle Mode"
-              onPress={handleTwoPlayer}
-              variant="filled"
-            />
-          </View>
-          <View style={styles.buttonRow}>
-            <PillButton
-              label="Rankings"
-              onPress={handleRanking}
-              variant="outlined"
-            />
-          </View>
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Crafted for musicians</Text>
-          <Text style={styles.footerDot}>v 1.0.0</Text>
-        </View>
-      </SafeAreaView>
+      {content}
     </ImageBackground>
   );
 }
@@ -130,11 +147,12 @@ const styles = StyleSheet.create({
     color: "rgba(74, 74, 74, 0.6)",
     textTransform: "uppercase",
     letterSpacing: 2,
-    fontWeight: "bold",
+    fontFamily: "Nunito_600SemiBold",
   },
   footerDot: {
     fontSize: 11,
     color: "rgba(74, 74, 74, 0.6)",
     marginTop: 4,
+    fontFamily: "Nunito_400Regular",
   },
 });

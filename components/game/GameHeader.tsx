@@ -9,8 +9,6 @@ import { useEffect, useState } from "react";
 import type { GameState, GameConfig } from "../../lib/types/game.types";
 import { formatTime, formatScore } from "../../utils/format";
 import { ANIMATION } from "../../constants/Config";
-import { StatItem } from "./StatItem";
-import { Heart, Coin } from "../icons";
 
 type GameHeaderProps = {
   gameState: GameState;
@@ -111,10 +109,8 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
 
   const isTwoPlayer = config.playerCount === 2;
 
-  // Calculate display values (visual only - not functional)
-  const displayHearts = Math.max(0, 3 - (gameState.players.player1.mistakes || 0));
-  const displayCoins = gameState.players.player1.score;
-  const displayLevel = config.difficulty === "easy" ? 1 : config.difficulty === "normal" ? 2 : 3;
+  // Display difficulty name instead of level number
+  const displayDifficulty = config.difficulty.toUpperCase();
 
   return (
     <View style={styles.container}>
@@ -147,18 +143,8 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
         <View style={styles.singlePlayerContainer}>
           {/* Status bar */}
           <View style={styles.statusBar}>
-            <StatItem
-              icon={<Heart size={18} color="#FF6B8A" />}
-              value={displayHearts}
-              color="#FF6B8A"
-            />
-            <StatItem
-              icon={<Coin size={18} color="#FFD700" />}
-              value={displayCoins}
-              color="#B8860B"
-            />
             <View style={styles.levelBadge}>
-              <Text style={styles.levelText}>Lv.{displayLevel}</Text>
+              <Text style={styles.levelText}>{displayDifficulty}</Text>
             </View>
             <View style={styles.scoreBadge}>
               <Text style={styles.scoreLabel}>SCORE</Text>
@@ -224,18 +210,18 @@ const styles = StyleSheet.create({
   },
   playerLabel: {
     fontSize: 14,
+    fontFamily: "Nunito_600SemiBold",
   },
   playerLabelActive: {
     color: "#9B7ED9",
-    fontWeight: "800",
+    fontFamily: "Nunito_800ExtraBold",
   },
   playerLabelInactive: {
     color: "rgba(74, 74, 74, 0.4)",
-    fontWeight: "400",
   },
   playerScore: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
   },
   playerScoreActive: {
     color: "#4A4A4A",
@@ -253,7 +239,7 @@ const styles = StyleSheet.create({
   comboText: {
     color: "#FFFFFF",
     fontSize: 11,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
   },
   vsContainer: {
     alignItems: "center",
@@ -262,6 +248,7 @@ const styles = StyleSheet.create({
   vsText: {
     color: "rgba(74, 74, 74, 0.6)",
     fontSize: 12,
+    fontFamily: "Nunito_600SemiBold",
   },
   pauseButtonSmall: {
     marginTop: 4,
@@ -282,14 +269,15 @@ const styles = StyleSheet.create({
   },
   levelBadge: {
     backgroundColor: "#9B7ED9",
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
   },
   levelText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontFamily: "Nunito_700Bold",
+    letterSpacing: 1,
   },
   scoreBadge: {
     flex: 1,
@@ -305,11 +293,11 @@ const styles = StyleSheet.create({
   scoreLabel: {
     fontSize: 11,
     color: "rgba(74, 74, 74, 0.6)",
-    fontWeight: "bold",
+    fontFamily: "Nunito_600SemiBold",
   },
   scoreValue: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
     color: "#9B7ED9",
   },
   timerBar: {
@@ -329,11 +317,11 @@ const styles = StyleSheet.create({
   timerLabel: {
     fontSize: 11,
     color: "rgba(74, 74, 74, 0.6)",
-    fontWeight: "bold",
+    fontFamily: "Nunito_600SemiBold",
   },
   timerValue: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
     color: "#4A4A4A",
   },
   comboBadgeSingle: {
@@ -345,7 +333,7 @@ const styles = StyleSheet.create({
   comboTextSingle: {
     color: "#FFFFFF",
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
   },
   pairsContainer: {
     flexDirection: "row",
@@ -355,11 +343,11 @@ const styles = StyleSheet.create({
   pairsLabel: {
     fontSize: 11,
     color: "rgba(74, 74, 74, 0.6)",
-    fontWeight: "bold",
+    fontFamily: "Nunito_600SemiBold",
   },
   pairsValue: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
     color: "#4A4A4A",
   },
   pauseButton: {
@@ -370,7 +358,7 @@ const styles = StyleSheet.create({
   },
   pauseButtonText: {
     color: "#FFFFFF",
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
     fontSize: 14,
   },
 });

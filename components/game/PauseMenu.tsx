@@ -1,6 +1,6 @@
-import { View, Text, Modal, Pressable } from "react-native";
+import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
-import { Button } from "../ui/Button";
+import { LinearGradient } from "expo-linear-gradient";
 import { useState, useEffect } from "react";
 import { useAudio } from "../../lib/hooks/useAudio";
 
@@ -9,6 +9,38 @@ type PauseMenuProps = {
   onResume: () => void;
   onQuit: () => void;
 };
+
+type GradientButtonProps = {
+  title: string;
+  onPress: () => void;
+  variant?: "primary" | "secondary";
+};
+
+function GradientButton({ title, onPress, variant = "primary" }: GradientButtonProps) {
+  const isPrimary = variant === "primary";
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        pressed && styles.buttonPressed,
+      ]}
+    >
+      <LinearGradient
+        colors={isPrimary ? ["#C4B5E0", "#9B7ED9", "#C4B5E0"] : ["#E8E0F0", "#D5C8E8", "#E8E0F0"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradientBorder}
+      >
+        <View style={[styles.buttonInner, !isPrimary && styles.buttonInnerSecondary]}>
+          <Text style={[styles.buttonText, !isPrimary && styles.buttonTextSecondary]}>
+            {title}
+          </Text>
+        </View>
+      </LinearGradient>
+    </Pressable>
+  );
+}
 
 export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
   const { getVolume, setVolume } = useAudio();
@@ -35,55 +67,136 @@ export function PauseMenu({ visible, onResume, onQuit }: PauseMenuProps) {
       animationType="fade"
       statusBarTranslucent
     >
-      <View className="flex-1 items-center justify-center bg-black/70">
-        <View className="bg-cream rounded-3xl p-8 mx-8 items-center border border-soft-charcoal/10"
-          style={{
-            shadowColor: "#4A4A4A",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 12,
-            elevation: 10,
-          }}
-        >
-          <Text className="text-soft-charcoal text-3xl font-bold mb-8">PAUSE</Text>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <Text style={styles.title}>PAUSE</Text>
 
-          <View className="gap-4 w-full">
+          <View style={styles.content}>
             {/* Volume Control */}
-            <View className="w-full mb-4" style={{ minWidth: 250 }}>
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-soft-charcoal text-lg font-semibold">音量</Text>
-                <Text className="text-soft-charcoal text-sm">{Math.round(volume * 100)}%</Text>
+            <View style={styles.volumeContainer}>
+              <View style={styles.volumeHeader}>
+                <Text style={styles.volumeLabel}>音量</Text>
+                <Text style={styles.volumeValue}>{Math.round(volume * 100)}%</Text>
               </View>
               <Slider
-                style={{ width: 250, height: 40 }}
+                style={styles.slider}
                 minimumValue={0}
                 maximumValue={1}
                 value={volume}
                 onValueChange={handleVolumeChange}
                 onSlidingComplete={handleVolumeChangeComplete}
-                minimumTrackTintColor="#7DA7C9"
-                maximumTrackTintColor="#D8D4C8"
-                thumbTintColor="#7DA7C9"
+                minimumTrackTintColor="#9B7ED9"
+                maximumTrackTintColor="#E8E0F0"
+                thumbTintColor="#9B7ED9"
               />
             </View>
 
-            <Button
-              title="Resume"
-              onPress={onResume}
-              variant="primary"
-              size="lg"
-              fullWidth
-            />
-            <Button
-              title="Quit to Title"
-              onPress={onQuit}
-              variant="outline"
-              size="lg"
-              fullWidth
-            />
+            <View style={styles.buttonContainer}>
+              <GradientButton
+                title="Resume"
+                onPress={onResume}
+                variant="primary"
+              />
+              <GradientButton
+                title="Quit to Title"
+                onPress={onQuit}
+                variant="secondary"
+              />
+            </View>
           </View>
         </View>
       </View>
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  container: {
+    backgroundColor: "#FFF8F0",
+    borderRadius: 24,
+    padding: 32,
+    marginHorizontal: 32,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(74, 74, 74, 0.1)",
+    shadowColor: "#4A4A4A",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  title: {
+    color: "#4A4A4A",
+    fontSize: 28,
+    fontFamily: "Nunito_800ExtraBold",
+    marginBottom: 24,
+    letterSpacing: 2,
+  },
+  content: {
+    width: "100%",
+    gap: 16,
+  },
+  volumeContainer: {
+    width: "100%",
+    marginBottom: 8,
+    minWidth: 250,
+  },
+  volumeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  volumeLabel: {
+    color: "#4A4A4A",
+    fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+  },
+  volumeValue: {
+    color: "#4A4A4A",
+    fontSize: 14,
+    fontFamily: "Nunito_400Regular",
+  },
+  slider: {
+    width: 250,
+    height: 40,
+  },
+  buttonContainer: {
+    gap: 12,
+    width: "100%",
+  },
+  gradientBorder: {
+    borderRadius: 9999,
+    padding: 4,
+    width: "100%",
+  },
+  buttonInner: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: 9999,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonInnerSecondary: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+  },
+  buttonText: {
+    color: "#9B7ED9",
+    fontSize: 16,
+    fontFamily: "Nunito_700Bold",
+  },
+  buttonTextSecondary: {
+    color: "#9B7ED9",
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.96 }],
+    opacity: 0.9,
+  },
+});

@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, StyleSheet } from "react-native";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
@@ -75,9 +75,16 @@ export function Button({
           ${variantStyle.text}
           ${sizeStyle.text}
         `}
+        style={buttonStyles.text}
       >
         {title}
       </Text>
     </Pressable>
   );
 }
+
+const buttonStyles = StyleSheet.create({
+  text: {
+    fontFamily: "Nunito_700Bold",
+  },
+});
