@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button } from "../components/ui/Button";
+import { GradientBackground } from "../components/ui/GradientBackground";
 import { useRanking } from "../lib/hooks/useRanking";
 import { formatScore, formatTime, formatDate, formatAccuracy } from "../utils/format";
 import type { GameMode, Difficulty, RankingEntry } from "../lib/types/game.types";
@@ -24,164 +25,286 @@ export default function RankingScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-cream">
-      {/* Header */}
-      <View className="flex-row items-center px-4 py-3">
-        <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
-        <Text className="text-soft-charcoal text-xl font-bold flex-1 text-center mr-16">
-          Rankings
-        </Text>
-      </View>
-
-      {/* Filters */}
-      <View className="px-4 pb-4">
-        {/* Mode filter */}
-        <View className="flex-row bg-white/60 rounded-xl p-1 mb-2 border border-soft-charcoal/10">
-          <Pressable
-            onPress={() => setMode("pitch")}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              mode === "pitch" ? "bg-warm-blue" : ""
-            }`}
-          >
-            <Text
-              className={`font-bold ${
-                mode === "pitch" ? "text-white" : "text-soft-charcoal/60"
-              }`}
-            >
-              Pitch
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setMode("chord")}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              mode === "chord" ? "bg-warm-blue" : ""
-            }`}
-          >
-            <Text
-              className={`font-bold ${
-                mode === "chord" ? "text-white" : "text-soft-charcoal/60"
-              }`}
-            >
-              Chord
-            </Text>
-          </Pressable>
+    <GradientBackground variant="result">
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
+          <Text style={styles.headerTitle}>Rankings</Text>
         </View>
 
-        {/* Difficulty filter */}
-        <View className="flex-row bg-white/60 rounded-xl p-1 mb-2 border border-soft-charcoal/10">
-          {(["easy", "normal", "hard"] as Difficulty[]).map((d) => (
+        {/* Filters */}
+        <View style={styles.filters}>
+          {/* Mode filter */}
+          <View style={styles.filterRow}>
             <Pressable
-              key={d}
-              onPress={() => setDifficulty(d)}
-              className={`flex-1 py-2 rounded-lg items-center ${
-                difficulty === d ? "bg-warm-sage" : ""
-              }`}
+              onPress={() => setMode("pitch")}
+              style={[
+                styles.filterButton,
+                mode === "pitch" && styles.filterButtonActive,
+              ]}
             >
               <Text
-                className={`font-bold capitalize ${
-                  difficulty === d ? "text-white" : "text-soft-charcoal/60"
-                }`}
+                style={[
+                  styles.filterText,
+                  mode === "pitch" && styles.filterTextActive,
+                ]}
               >
-                {d}
+                Pitch
               </Text>
             </Pressable>
-          ))}
+            <Pressable
+              onPress={() => setMode("chord")}
+              style={[
+                styles.filterButton,
+                mode === "chord" && styles.filterButtonActive,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  mode === "chord" && styles.filterTextActive,
+                ]}
+              >
+                Chord
+              </Text>
+            </Pressable>
+          </View>
+
+          {/* Difficulty filter */}
+          <View style={styles.filterRow}>
+            {(["easy", "normal", "hard"] as Difficulty[]).map((d) => (
+              <Pressable
+                key={d}
+                onPress={() => setDifficulty(d)}
+                style={[
+                  styles.filterButton,
+                  difficulty === d && styles.filterButtonSecondary,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.filterText,
+                    difficulty === d && styles.filterTextActive,
+                    { textTransform: "capitalize" },
+                  ]}
+                >
+                  {d}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          {/* Extended rules filter */}
+          <View style={styles.filterRow}>
+            <Pressable
+              onPress={() => setIsExtended(false)}
+              style={[
+                styles.filterButton,
+                !isExtended && styles.filterButtonActive,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  !isExtended && styles.filterTextActive,
+                ]}
+              >
+                Normal Rules
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setIsExtended(true)}
+              style={[
+                styles.filterButton,
+                isExtended && styles.filterButtonActive,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  isExtended && styles.filterTextActive,
+                ]}
+              >
+                Extended Rules
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
-        {/* Extended rules filter */}
-        <View className="flex-row bg-white/60 rounded-xl p-1 border border-soft-charcoal/10">
-          <Pressable
-            onPress={() => setIsExtended(false)}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              !isExtended ? "bg-warm-blue" : ""
-            }`}
-          >
-            <Text
-              className={`font-bold ${
-                !isExtended ? "text-white" : "text-soft-charcoal/60"
-              }`}
-            >
-              Normal Rules
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setIsExtended(true)}
-            className={`flex-1 py-2 rounded-lg items-center ${
-              isExtended ? "bg-warm-blue" : ""
-            }`}
-          >
-            <Text
-              className={`font-bold ${
-                isExtended ? "text-white" : "text-soft-charcoal/60"
-              }`}
-            >
-              Extended Rules
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Rankings list */}
-      <ScrollView className="flex-1 px-4">
-        {isLoading ? (
-          <View className="items-center py-8">
-            <Text className="text-soft-charcoal/60">Loading...</Text>
-          </View>
-        ) : rankings.length === 0 ? (
-          <View className="items-center py-8">
-            <Text className="text-soft-charcoal text-lg">No scores yet!</Text>
-            <Text className="text-soft-charcoal/60 text-sm mt-2">
-              Play a game to set a record
-            </Text>
-          </View>
-        ) : (
-          rankings.map((entry, index) => (
-            <RankingRow key={entry.id} entry={entry} rank={index + 1} />
-          ))
-        )}
-      </ScrollView>
-    </SafeAreaView>
+        {/* Rankings list */}
+        <ScrollView style={styles.list}>
+          {isLoading ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>Loading...</Text>
+            </View>
+          ) : rankings.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>No scores yet!</Text>
+              <Text style={styles.emptySubtitle}>
+                Play a game to set a record
+              </Text>
+            </View>
+          ) : (
+            rankings.map((entry, index) => (
+              <RankingRow key={entry.id} entry={entry} rank={index + 1} />
+            ))
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerTitle: {
+    color: "#4A4A4A",
+    fontSize: 20,
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
+    marginRight: 64,
+  },
+  filters: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    gap: 8,
+  },
+  filterRow: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 12,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: "rgba(74, 74, 74, 0.1)",
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  filterButtonActive: {
+    backgroundColor: "#9B7ED9",
+  },
+  filterButtonSecondary: {
+    backgroundColor: "#9CB5A2",
+  },
+  filterText: {
+    fontWeight: "bold",
+    color: "rgba(74, 74, 74, 0.6)",
+  },
+  filterTextActive: {
+    color: "#FFFFFF",
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 32,
+  },
+  emptyText: {
+    color: "rgba(74, 74, 74, 0.6)",
+  },
+  emptyTitle: {
+    color: "#4A4A4A",
+    fontSize: 18,
+  },
+  emptySubtitle: {
+    color: "rgba(74, 74, 74, 0.6)",
+    fontSize: 14,
+    marginTop: 8,
+  },
+});
 
 function RankingRow({ entry, rank }: { entry: RankingEntry; rank: number }) {
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
-        return "text-yellow-500";
+        return "#EAB308"; // gold
       case 2:
-        return "text-gray-400";
+        return "#9CA3AF"; // silver
       case 3:
-        return "text-amber-600";
+        return "#D97706"; // bronze
       default:
-        return "text-soft-charcoal/60";
+        return "rgba(74, 74, 74, 0.6)";
     }
   };
 
   return (
-    <View className="flex-row items-center py-3 border-b border-soft-charcoal/10">
-      <View className="w-10">
-        <Text className={`text-xl font-bold ${getRankColor(rank)}`}>
+    <View style={rowStyles.container}>
+      <View style={rowStyles.rankContainer}>
+        <Text style={[rowStyles.rankText, { color: getRankColor(rank) }]}>
           #{rank}
         </Text>
       </View>
-      <View className="flex-1">
-        <Text className="text-soft-charcoal text-xl font-bold">
-          {formatScore(entry.score)}
-        </Text>
-        <View className="flex-row mt-1">
-          <Text className="text-soft-charcoal/60 text-sm">
-            {formatTime(entry.clearTime)}
-          </Text>
-          <Text className="text-soft-charcoal/30 text-sm mx-2">|</Text>
-          <Text className="text-soft-charcoal/60 text-sm">
-            {formatAccuracy(entry.accuracy)}
-          </Text>
+      <View style={rowStyles.content}>
+        <Text style={rowStyles.score}>{formatScore(entry.score)}</Text>
+        <View style={rowStyles.details}>
+          <Text style={rowStyles.detailText}>{formatTime(entry.clearTime)}</Text>
+          <Text style={rowStyles.separator}>|</Text>
+          <Text style={rowStyles.detailText}>{formatAccuracy(entry.accuracy)}</Text>
         </View>
       </View>
-      <View className="items-end">
-        <Text className="text-soft-charcoal/60 text-sm">{formatDate(entry.date)}</Text>
+      <View style={rowStyles.dateContainer}>
+        <Text style={rowStyles.dateText}>{formatDate(entry.date)}</Text>
       </View>
     </View>
   );
 }
+
+const rowStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(74, 74, 74, 0.1)",
+  },
+  rankContainer: {
+    width: 40,
+  },
+  rankText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  content: {
+    flex: 1,
+  },
+  score: {
+    color: "#4A4A4A",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  details: {
+    flexDirection: "row",
+    marginTop: 4,
+  },
+  detailText: {
+    color: "rgba(74, 74, 74, 0.6)",
+    fontSize: 14,
+  },
+  separator: {
+    color: "rgba(74, 74, 74, 0.3)",
+    fontSize: 14,
+    marginHorizontal: 8,
+  },
+  dateContainer: {
+    alignItems: "flex-end",
+  },
+  dateText: {
+    color: "rgba(74, 74, 74, 0.6)",
+    fontSize: 14,
+  },
+});

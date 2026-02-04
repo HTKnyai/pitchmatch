@@ -46,6 +46,7 @@ export function CardGrid({
               >
                 <GameCard
                   card={card}
+                  cardIndex={cardIndex}
                   notation={config.notation}
                   showOctave={config.showOctave}
                   isBlindMode={config.isBlindMode}

@@ -1,10 +1,11 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Button } from "../components/ui/Button";
 import { ModeSelector } from "../components/customize/ModeSelector";
 import { DifficultySelector } from "../components/customize/DifficultySelector";
 import { SettingsToggles } from "../components/customize/SettingsToggles";
+import { GradientBackground } from "../components/ui/GradientBackground";
 import { useGame } from "../lib/context/GameContext";
 import type { GameMode, Difficulty, Notation } from "../lib/types/game.types";
 
@@ -47,50 +48,86 @@ export default function CustomizeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-cream">
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
-        {/* Header */}
-        <View className="flex-row items-center mb-6">
-          <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
-          <Text className="text-soft-charcoal text-xl font-bold flex-1 text-center mr-16">
-            {config.playerCount === 1 ? "1 Player" : "2 Players"}
-          </Text>
+    <GradientBackground variant="customize">
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scroll} contentContainerStyle={{ padding: 16 }}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
+            <Text style={styles.headerTitle}>
+              {config.playerCount === 1 ? "1 Player" : "2 Players"}
+            </Text>
+          </View>
+
+          {/* Mode selection */}
+          <ModeSelector value={config.mode} onValueChange={handleModeChange} />
+
+          {/* Difficulty selection */}
+          <DifficultySelector
+            value={config.difficulty}
+            onValueChange={handleDifficultyChange}
+          />
+
+          {/* Settings */}
+          <Text style={styles.sectionTitle}>Settings</Text>
+          <SettingsToggles
+            notation={config.notation}
+            showOctave={config.showOctave}
+            isBlindMode={config.isBlindMode}
+            isExtendedRules={config.isExtendedRules}
+            gameMode={config.mode}
+            onNotationChange={handleNotationChange}
+            onShowOctaveChange={handleShowOctaveChange}
+            onBlindModeChange={handleBlindModeChange}
+            onExtendedRulesChange={handleExtendedRulesChange}
+          />
+        </ScrollView>
+
+        {/* Start button */}
+        <View style={styles.footer}>
+          <Button
+            title="Start Game"
+            onPress={handleStart}
+            variant="primary"
+            size="lg"
+            fullWidth
+          />
         </View>
-
-        {/* Mode selection */}
-        <ModeSelector value={config.mode} onValueChange={handleModeChange} />
-
-        {/* Difficulty selection */}
-        <DifficultySelector
-          value={config.difficulty}
-          onValueChange={handleDifficultyChange}
-        />
-
-        {/* Settings */}
-        <Text className="text-soft-charcoal text-lg font-bold mb-3">Settings</Text>
-        <SettingsToggles
-          notation={config.notation}
-          showOctave={config.showOctave}
-          isBlindMode={config.isBlindMode}
-          isExtendedRules={config.isExtendedRules}
-          gameMode={config.mode}
-          onNotationChange={handleNotationChange}
-          onShowOctaveChange={handleShowOctaveChange}
-          onBlindModeChange={handleBlindModeChange}
-          onExtendedRulesChange={handleExtendedRulesChange}
-        />
-      </ScrollView>
-
-      {/* Start button */}
-      <View className="p-4 bg-cream border-t border-soft-charcoal/5">
-        <Button
-          title="Start Game"
-          onPress={handleStart}
-          variant="primary"
-          size="lg"
-          fullWidth
-        />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  headerTitle: {
+    color: "#4A4A4A",
+    fontSize: 20,
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
+    marginRight: 64,
+  },
+  sectionTitle: {
+    color: "#4A4A4A",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+  footer: {
+    padding: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(74, 74, 74, 0.05)",
+  },
+});

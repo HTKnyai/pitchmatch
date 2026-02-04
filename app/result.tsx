@@ -1,10 +1,11 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { ResultSummary } from "../components/result/ResultSummary";
 import { RankingPreview } from "../components/result/RankingPreview";
+import { GradientBackground } from "../components/ui/GradientBackground";
 import { useGame } from "../lib/context/GameContext";
 import { useRanking } from "../lib/hooks/useRanking";
 import { calculateFinalScore, calculateAccuracy } from "../lib/game/ScoreCalculator";
@@ -87,44 +88,69 @@ export default function ResultScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-cream">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-      >
-        <ResultSummary
-          gameState={state}
-          config={config}
-          isHighScore={isHighScore}
-        />
+    <GradientBackground variant="result">
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+        >
+          <ResultSummary
+            gameState={state}
+            config={config}
+            isHighScore={isHighScore}
+          />
 
-        {!isTwoPlayer && (
-          <View className="mt-6">
-            <RankingPreview
-              rankings={rankings}
-              currentScore={calculateFinalScore(state, config)}
-              title="Your Rankings"
-            />
-          </View>
-        )}
-      </ScrollView>
+          {!isTwoPlayer && (
+            <View style={styles.rankingContainer}>
+              <RankingPreview
+                rankings={rankings}
+                currentScore={calculateFinalScore(state, config)}
+                title="Your Rankings"
+              />
+            </View>
+          )}
+        </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 p-4 bg-cream border-t border-soft-charcoal/5 gap-3">
-        <Button
-          title="Play Again"
-          onPress={handlePlayAgain}
-          variant="primary"
-          size="lg"
-          fullWidth
-        />
-        <Button
-          title="Back to Title"
-          onPress={handleBackToTitle}
-          variant="outline"
-          size="md"
-          fullWidth
-        />
-      </View>
-    </SafeAreaView>
+        <View style={styles.footer}>
+          <Button
+            title="Play Again"
+            onPress={handlePlayAgain}
+            variant="primary"
+            size="lg"
+            fullWidth
+          />
+          <Button
+            title="Back to Title"
+            onPress={handleBackToTitle}
+            variant="outline"
+            size="md"
+            fullWidth
+          />
+        </View>
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  rankingContainer: {
+    marginTop: 24,
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(74, 74, 74, 0.05)",
+    gap: 12,
+  },
+});

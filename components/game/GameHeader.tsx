@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import type { GameState, GameConfig } from "../../lib/types/game.types";
 import { formatTime, formatScore } from "../../utils/format";
 import { ANIMATION } from "../../constants/Config";
+import { StatItem } from "./StatItem";
+import { Heart, Coin } from "../icons";
 
 type GameHeaderProps = {
   gameState: GameState;
@@ -56,39 +58,36 @@ function PlayerPanel({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     borderWidth: borderWidth.value,
-    borderColor: "#7DA7C9",
+    borderColor: "#9B7ED9",
   }));
 
   const bgStyle = useAnimatedStyle(() => ({
-    backgroundColor: `rgba(200, 220, 240, ${bgOpacity.value * 0.5})`,
+    backgroundColor: `rgba(232, 224, 240, ${bgOpacity.value * 0.8})`,
   }));
 
   return (
     <Animated.View
-      style={[animatedStyle, bgStyle]}
-      className="items-center flex-1 py-2 px-3 rounded-xl"
+      style={[animatedStyle, bgStyle, styles.playerPanel]}
     >
       <Text
-        className={`text-base ${
-          isActive
-            ? "text-warm-blue font-extrabold"
-            : "text-soft-charcoal/40 font-normal"
-        }`}
+        style={[
+          styles.playerLabel,
+          isActive ? styles.playerLabelActive : styles.playerLabelInactive,
+        ]}
       >
         Player {playerNumber}
       </Text>
       <Text
-        className={`text-3xl font-bold ${
-          isActive ? "text-soft-charcoal" : "text-soft-charcoal/40"
-        }`}
+        style={[
+          styles.playerScore,
+          isActive ? styles.playerScoreActive : styles.playerScoreInactive,
+        ]}
       >
         {formatScore(score)}
       </Text>
       {comboCount > 1 && isActive && (
-        <View className="bg-warm-coral px-2 py-0.5 rounded-full mt-1">
-          <Text className="text-white text-xs font-bold">
-            {comboCount}x Combo
-          </Text>
+        <View style={styles.comboBadge}>
+          <Text style={styles.comboText}>{comboCount}x Combo</Text>
         </View>
       )}
     </Animated.View>
@@ -112,11 +111,16 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
 
   const isTwoPlayer = config.playerCount === 2;
 
+  // Calculate display values (visual only - not functional)
+  const displayHearts = Math.max(0, 3 - (gameState.players.player1.mistakes || 0));
+  const displayCoins = gameState.players.player1.score;
+  const displayLevel = config.difficulty === "easy" ? 1 : config.difficulty === "normal" ? 2 : 3;
+
   return (
-    <View className="w-full px-4 py-3 bg-white/40">
+    <View style={styles.container}>
       {isTwoPlayer ? (
-        // Two player header - enhanced
-        <View className="flex-row items-center justify-between">
+        // Two player header
+        <View style={styles.twoPlayerContainer}>
           <PlayerPanel
             playerNumber={1}
             score={gameState.players.player1.score}
@@ -124,13 +128,10 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
             isActive={gameState.currentPlayer === 1}
           />
 
-          <View className="items-center px-2">
-            <Text className="text-soft-charcoal/60 text-sm">VS</Text>
-            <Pressable
-              onPress={onPause}
-              className="mt-1 px-3 py-1 bg-warm-sage rounded-lg"
-            >
-              <Text className="text-white text-xs">PAUSE</Text>
+          <View style={styles.vsContainer}>
+            <Text style={styles.vsText}>VS</Text>
+            <Pressable onPress={onPause} style={styles.pauseButtonSmall}>
+              <Text style={styles.pauseButtonText}>II</Text>
             </Pressable>
           </View>
 
@@ -142,47 +143,234 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
           />
         </View>
       ) : (
-        // Single player header - with combo display
-        <View className="flex-row items-center justify-between">
-          <View className="items-center">
-            <Text className="text-soft-charcoal/60 text-sm">SCORE</Text>
-            <Text className="text-soft-charcoal text-2xl font-bold">
-              {formatScore(gameState.players.player1.score)}
-            </Text>
+        // Single player header - New design
+        <View style={styles.singlePlayerContainer}>
+          {/* Status bar */}
+          <View style={styles.statusBar}>
+            <StatItem
+              icon={<Heart size={18} color="#FF6B8A" />}
+              value={displayHearts}
+              color="#FF6B8A"
+            />
+            <StatItem
+              icon={<Coin size={18} color="#FFD700" />}
+              value={displayCoins}
+              color="#B8860B"
+            />
+            <View style={styles.levelBadge}>
+              <Text style={styles.levelText}>Lv.{displayLevel}</Text>
+            </View>
+            <View style={styles.scoreBadge}>
+              <Text style={styles.scoreLabel}>SCORE</Text>
+              <Text style={styles.scoreValue}>
+                {formatScore(gameState.players.player1.score)}
+              </Text>
+            </View>
           </View>
 
-          {gameState.players.player1.comboCount > 1 && (
-            <View className="items-center">
-              <View className="bg-warm-coral px-3 py-1 rounded-full">
-                <Text className="text-white font-bold">
+          {/* Timer and info bar */}
+          <View style={styles.timerBar}>
+            <View style={styles.timerContainer}>
+              <Text style={styles.timerLabel}>TIME</Text>
+              <Text style={styles.timerValue}>{formatTime(elapsedTime)}</Text>
+            </View>
+
+            {gameState.players.player1.comboCount > 1 && (
+              <View style={styles.comboBadgeSingle}>
+                <Text style={styles.comboTextSingle}>
                   {gameState.players.player1.comboCount}x COMBO
                 </Text>
               </View>
+            )}
+
+            <View style={styles.pairsContainer}>
+              <Text style={styles.pairsLabel}>PAIRS</Text>
+              <Text style={styles.pairsValue}>
+                {gameState.matchedPairs}/{gameState.totalPairs}
+              </Text>
             </View>
-          )}
 
-          <View className="items-center">
-            <Text className="text-soft-charcoal/60 text-sm">TIME</Text>
-            <Text className="text-soft-charcoal text-2xl font-bold">
-              {formatTime(elapsedTime)}
-            </Text>
+            <Pressable onPress={onPause} style={styles.pauseButton}>
+              <Text style={styles.pauseButtonText}>II</Text>
+            </Pressable>
           </View>
-
-          <View className="items-center">
-            <Text className="text-soft-charcoal/60 text-sm">PAIRS</Text>
-            <Text className="text-soft-charcoal text-2xl font-bold">
-              {gameState.matchedPairs}/{gameState.totalPairs}
-            </Text>
-          </View>
-
-          <Pressable
-            onPress={onPause}
-            className="px-4 py-2 bg-warm-blue rounded-xl"
-          >
-            <Text className="text-white font-bold">II</Text>
-          </Pressable>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  // Two player styles
+  twoPlayerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 20,
+    padding: 12,
+  },
+  playerPanel: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+  },
+  playerLabel: {
+    fontSize: 14,
+  },
+  playerLabelActive: {
+    color: "#9B7ED9",
+    fontWeight: "800",
+  },
+  playerLabelInactive: {
+    color: "rgba(74, 74, 74, 0.4)",
+    fontWeight: "400",
+  },
+  playerScore: {
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  playerScoreActive: {
+    color: "#4A4A4A",
+  },
+  playerScoreInactive: {
+    color: "rgba(74, 74, 74, 0.4)",
+  },
+  comboBadge: {
+    backgroundColor: "#FF6B8A",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginTop: 4,
+  },
+  comboText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+  vsContainer: {
+    alignItems: "center",
+    paddingHorizontal: 8,
+  },
+  vsText: {
+    color: "rgba(74, 74, 74, 0.6)",
+    fontSize: 12,
+  },
+  pauseButtonSmall: {
+    marginTop: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: "#9B7ED9",
+    borderRadius: 8,
+  },
+  // Single player styles
+  singlePlayerContainer: {
+    gap: 8,
+  },
+  statusBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  levelBadge: {
+    backgroundColor: "#9B7ED9",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  levelText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  scoreBadge: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 8,
+  },
+  scoreLabel: {
+    fontSize: 11,
+    color: "rgba(74, 74, 74, 0.6)",
+    fontWeight: "bold",
+  },
+  scoreValue: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#9B7ED9",
+  },
+  timerBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  timerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  timerLabel: {
+    fontSize: 11,
+    color: "rgba(74, 74, 74, 0.6)",
+    fontWeight: "bold",
+  },
+  timerValue: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4A4A4A",
+  },
+  comboBadgeSingle: {
+    backgroundColor: "#FF6B8A",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  comboTextSingle: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  pairsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  pairsLabel: {
+    fontSize: 11,
+    color: "rgba(74, 74, 74, 0.6)",
+    fontWeight: "bold",
+  },
+  pairsValue: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4A4A4A",
+  },
+  pauseButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "#9B7ED9",
+    borderRadius: 12,
+  },
+  pauseButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+});

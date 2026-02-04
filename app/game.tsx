@@ -7,6 +7,7 @@ import { GameHeader } from "../components/game/GameHeader";
 import { PauseMenu } from "../components/game/PauseMenu";
 import { TurnIndicator } from "../components/game/TurnIndicator";
 import { ScorePopup } from "../components/game/ScorePopup";
+import { GradientBackground } from "../components/ui/GradientBackground";
 import { useGame } from "../lib/context/GameContext";
 import { useAudio } from "../lib/hooks/useAudio";
 import type { Card, PitchCard, ChordCard } from "../lib/types/game.types";
@@ -126,45 +127,47 @@ export default function GameScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-cream" edges={["top"]}>
-      <GameHeader
-        gameState={state}
-        config={state.config}
-        onPause={handlePause}
-      />
-
-      <View className="flex-1 justify-center py-4">
-        <CardGrid
-          cards={state.cards}
+    <GradientBackground variant="game">
+      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        <GameHeader
+          gameState={state}
           config={state.config}
-          onCardPress={handleCardPress}
-          disabled={
-            state.gameStatus !== "playing" || state.flippedCards.length >= 2
-          }
+          onPause={handlePause}
         />
-      </View>
 
-      {/* Turn transition indicator */}
-      <TurnIndicator
-        currentPlayer={state.currentPlayer}
-        previousPlayer={previousPlayer}
-        isTwoPlayer={state.config.playerCount === 2}
-      />
+        <View style={{ flex: 1, justifyContent: "center", paddingVertical: 16 }}>
+          <CardGrid
+            cards={state.cards}
+            config={state.config}
+            onCardPress={handleCardPress}
+            disabled={
+              state.gameStatus !== "playing" || state.flippedCards.length >= 2
+            }
+          />
+        </View>
 
-      {/* Score popup with combo info */}
-      {scorePopup.visible && (
-        <ScorePopup
-          points={scorePopup.points}
-          comboCount={scorePopup.comboCount}
-          multiplier={scorePopup.multiplier}
+        {/* Turn transition indicator */}
+        <TurnIndicator
+          currentPlayer={state.currentPlayer}
+          previousPlayer={previousPlayer}
+          isTwoPlayer={state.config.playerCount === 2}
         />
-      )}
 
-      <PauseMenu
-        visible={state.gameStatus === "paused"}
-        onResume={handleResume}
-        onQuit={handleQuit}
-      />
-    </SafeAreaView>
+        {/* Score popup with combo info */}
+        {scorePopup.visible && (
+          <ScorePopup
+            points={scorePopup.points}
+            comboCount={scorePopup.comboCount}
+            multiplier={scorePopup.multiplier}
+          />
+        )}
+
+        <PauseMenu
+          visible={state.gameStatus === "paused"}
+          onResume={handleResume}
+          onQuit={handleQuit}
+        />
+      </SafeAreaView>
+    </GradientBackground>
   );
 }

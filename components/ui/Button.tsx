@@ -14,7 +14,7 @@ type ButtonProps = {
 
 const variantStyles: Record<ButtonVariant, { container: string; text: string }> = {
   primary: {
-    container: "bg-warm-blue active:bg-warm-blue/90",
+    container: "bg-btn-purple active:bg-btn-purple/90",
     text: "text-white",
   },
   secondary: {
@@ -22,8 +22,8 @@ const variantStyles: Record<ButtonVariant, { container: string; text: string }> 
     text: "text-white",
   },
   outline: {
-    container: "bg-white border-2 border-soft-charcoal/10 active:bg-cream",
-    text: "text-soft-charcoal",
+    container: "bg-white border-2 border-btn-purple-light/30 active:bg-lavender-light",
+    text: "text-btn-purple",
   },
   ghost: {
     container: "bg-transparent active:bg-soft-charcoal/5",

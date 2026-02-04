@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, StyleSheet, Image } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,8 +12,12 @@ import { formatCard } from "../../utils/format";
 import type { Notation } from "../../lib/types/game.types";
 import { ANIMATION } from "../../constants/Config";
 
+// Card icon image (treble clef from title image)
+const cardIconImage = require("../../assets/images/melodymemory_title.jpeg");
+
 type GameCardProps = {
   card: CardType;
+  cardIndex: number;
   notation: Notation;
   showOctave: boolean;
   isBlindMode: boolean;
@@ -21,10 +25,17 @@ type GameCardProps = {
   disabled?: boolean;
 };
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+// Pastel card background colors
+const CARD_COLORS = [
+  { bg: "#FFD6E0", border: "#FFB8C8" }, // Pink
+  { bg: "#E0D4F5", border: "#C9B8E8" }, // Purple
+  { bg: "#D4F5E9", border: "#B8E8D4" }, // Mint
+  { bg: "#FFF8E7", border: "#F5E8C4" }, // Cream
+];
 
 export function GameCard({
   card,
+  cardIndex,
   notation,
   showOctave,
   isBlindMode,
@@ -32,6 +43,9 @@ export function GameCard({
   disabled = false,
 }: GameCardProps) {
   const rotation = useSharedValue(0);
+
+  // Get color based on card index
+  const colorSet = CARD_COLORS[cardIndex % CARD_COLORS.length];
 
   useEffect(() => {
     rotation.value = withTiming(card.isFlipped || card.isMatched ? 180 : 0, {
@@ -77,30 +91,27 @@ export function GameCard({
     <Pressable
       onPress={onPress}
       disabled={disabled || card.isMatched}
-      className="w-full aspect-[3/4]"
+      style={styles.pressable}
     >
-      <View className="relative w-full h-full">
+      <View style={styles.cardContainer}>
         {/* Front of card (hidden when flipped) */}
         <Animated.View
           style={[
             frontAnimatedStyle,
+            styles.cardFace,
             {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              shadowColor: "#9CB5A2",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 4,
-              elevation: 3,
+              backgroundColor: colorSet.bg,
+              borderColor: colorSet.border,
+              shadowColor: "#9B7ED9",
             },
           ]}
-          className="items-center justify-center rounded-2xl bg-warm-peach border-2 border-soft-charcoal/10"
         >
-          <View className="w-12 h-12 items-center justify-center rounded-full bg-soft-charcoal/10">
-            <Text className="text-3xl">🎵</Text>
+          <View style={styles.iconContainer}>
+            <Image
+              source={cardIconImage}
+              style={styles.cardIcon}
+              resizeMode="cover"
+            />
           </View>
         </Animated.View>
 
@@ -108,31 +119,20 @@ export function GameCard({
         <Animated.View
           style={[
             backAnimatedStyle,
+            styles.cardFace,
+            card.isMatched
+              ? styles.cardMatched
+              : styles.cardFlipped,
             {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              shadowColor: card.isMatched ? "#9CB5A2" : "#7DA7C9",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 4,
-              elevation: 3,
+              shadowColor: card.isMatched ? "#9B7ED9" : "#9B7ED9",
             },
           ]}
-          className={`
-            items-center justify-center
-            rounded-2xl
-            border-2
-            ${card.isMatched ? "bg-warm-sage border-warm-sage" : "bg-white border-soft-charcoal/10"}
-          `}
         >
           <Text
-            className={`
-              text-2xl font-bold text-center px-2
-              ${card.isMatched ? "text-white" : "text-warm-blue"}
-            `}
+            style={[
+              styles.cardText,
+              card.isMatched ? styles.cardTextMatched : styles.cardTextFlipped,
+            ]}
             numberOfLines={2}
             adjustsFontSizeToFit
           >
@@ -143,3 +143,62 @@ export function GameCard({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  pressable: {
+    width: "100%",
+    aspectRatio: 3 / 4,
+  },
+  cardContainer: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+  },
+  cardFace: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  cardFlipped: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "rgba(74, 74, 74, 0.1)",
+  },
+  cardMatched: {
+    backgroundColor: "#9B7ED9",
+    borderColor: "#9B7ED9",
+  },
+  cardText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingHorizontal: 8,
+  },
+  cardTextFlipped: {
+    color: "#9B7ED9",
+  },
+  cardTextMatched: {
+    color: "#FFFFFF",
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardIcon: {
+    width: 80,
+    height: 80,
+  },
+});
