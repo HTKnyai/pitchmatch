@@ -18,7 +18,8 @@
       "WebFetch(domain:kasata.medium.com)",
       "Bash(npm ls:*)",
       "WebFetch(domain:docs.expo.dev)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
