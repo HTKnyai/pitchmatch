@@ -1,11 +1,11 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, DimensionValue } from "react-native";
 import { Sparkle } from "../icons";
 
 type SparklePosition = {
-  top?: number | string;
-  bottom?: number | string;
-  left?: number | string;
-  right?: number | string;
+  top?: DimensionValue;
+  bottom?: DimensionValue;
+  left?: DimensionValue;
+  right?: DimensionValue;
   size: number;
   color?: string;
   opacity?: number;

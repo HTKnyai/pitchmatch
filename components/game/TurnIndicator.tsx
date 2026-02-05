@@ -36,7 +36,7 @@ export function TurnIndicator({
       // Animate in
       opacity.value = withTiming(1, { duration: 200 });
       scale.value = withSequence(
-        withTiming(1.1, { duration: 150, easing: Easing.out(Easing.back) }),
+        withTiming(1.1, { duration: 150, easing: Easing.out(Easing.back()) }),
         withTiming(1, { duration: 100 })
       );
 
