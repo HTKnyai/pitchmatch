@@ -13,8 +13,8 @@ import type { Notation } from "../../lib/types/game.types";
 import { ANIMATION } from "../../constants/Config";
 import { Sparkle } from "../icons";
 
-// Card icon image (treble clef from title image)
-const cardIconImage = require("../../assets/images/melodymemory_title.jpeg");
+// Card icon image (treble clef logo)
+const cardIconImage = require("../../assets/images/cref_logo.png");
 
 type GameCardProps = {
   card: CardType;
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cardIcon: {
-    width: "100%",
-    height: "100%",
+    width: "50%",
+    height: "65%",
   },
 });
