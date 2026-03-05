@@ -12,6 +12,7 @@ class AudioEngineClass {
   private isInitialized = false;
   private isPreloaded = false;
   private volume: number = DEFAULT_VOLUME;
+  private lastCardSoundKeys: string[] = [];
 
   // Convert MIDI note to filename key (e.g., 60 -> "C4", 61 -> "Cs4")
   getMidiFileName(midiNote: number): string {
@@ -134,15 +135,33 @@ class AudioEngineClass {
     }
   }
 
+  // Stop the last card's sounds (used before playing a new card)
+  async stopLastCardSounds(): Promise<void> {
+    for (const key of this.lastCardSoundKeys) {
+      const sound = this.soundCache.get(key);
+      if (sound) {
+        try {
+          await sound.stopAsync();
+        } catch (error) {
+          // Ignore stop errors
+        }
+      }
+    }
+    this.lastCardSoundKeys = [];
+  }
+
   // Play a note by MIDI number
   async playNote(midiNote: number): Promise<void> {
     const key = this.getMidiFileName(midiNote);
+    this.lastCardSoundKeys = [key];
     await this.playSound(key);
   }
 
   // Play multiple notes simultaneously (for chords)
   async playChord(midiNotes: number[]): Promise<void> {
-    const promises = midiNotes.map((note) => this.playNote(note));
+    const keys = midiNotes.map((note) => this.getMidiFileName(note));
+    this.lastCardSoundKeys = keys;
+    const promises = keys.map((key) => this.playSound(key));
     await Promise.all(promises);
   }
 

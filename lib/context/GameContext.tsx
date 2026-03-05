@@ -38,6 +38,7 @@ const initialGameState: GameState = {
   gameStatus: "idle",
   startTime: null,
   endTime: null,
+  cardColorIndex: 0,
 };
 
 // Action types
@@ -83,6 +84,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         gameStatus: "playing",
         startTime: Date.now(),
         endTime: null,
+        cardColorIndex: Math.floor(Math.random() * 4),
       };
     }
 

@@ -18,7 +18,7 @@ const cardIconImage = require("../../assets/images/cref_logo.png");
 
 type GameCardProps = {
   card: CardType;
-  cardIndex: number;
+  cardColorIndex: number;
   notation: Notation;
   showOctave: boolean;
   isBlindMode: boolean;
@@ -81,7 +81,7 @@ function CornerDecoration({ position }: { position: "topLeft" | "topRight" | "bo
 
 export function GameCard({
   card,
-  cardIndex,
+  cardColorIndex,
   notation,
   showOctave,
   isBlindMode,
@@ -91,8 +91,8 @@ export function GameCard({
   const rotation = useSharedValue(0);
   const [imageError, setImageError] = useState(false);
 
-  // Get color based on card index
-  const colorSet = CARD_COLORS[cardIndex % CARD_COLORS.length];
+  // Get color based on game color index (unified per game)
+  const colorSet = CARD_COLORS[cardColorIndex % CARD_COLORS.length];
 
   useEffect(() => {
     rotation.value = withTiming(card.isFlipped || card.isMatched ? 180 : 0, {

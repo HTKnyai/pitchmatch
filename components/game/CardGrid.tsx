@@ -6,6 +6,7 @@ import { DIFFICULTY_CONFIG } from "../../constants/Config";
 type CardGridProps = {
   cards: Card[];
   config: GameConfig;
+  cardColorIndex: number;
   onCardPress: (card: Card) => void;
   disabled?: boolean;
 };
@@ -13,6 +14,7 @@ type CardGridProps = {
 export function CardGrid({
   cards,
   config,
+  cardColorIndex,
   onCardPress,
   disabled = false,
 }: CardGridProps) {
@@ -46,7 +48,7 @@ export function CardGrid({
               >
                 <GameCard
                   card={card}
-                  cardIndex={cardIndex}
+                  cardColorIndex={cardColorIndex}
                   notation={config.notation}
                   showOctave={config.showOctave}
                   isBlindMode={config.isBlindMode}

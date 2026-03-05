@@ -20,6 +20,10 @@ export function useAudio() {
     };
   }, []);
 
+  const stopCurrentCard = useCallback(async () => {
+    await AudioEngine.stopLastCardSounds();
+  }, []);
+
   const playNote = useCallback(async (midiNote: number) => {
     await AudioEngine.playNote(midiNote);
   }, []);
@@ -49,6 +53,7 @@ export function useAudio() {
   }, []);
 
   return {
+    stopCurrentCard,
     playNote,
     playChord,
     playSuccess,

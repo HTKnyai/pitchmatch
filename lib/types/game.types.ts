@@ -69,6 +69,7 @@ export type GameState = {
   gameStatus: GameStatus;
   startTime: number | null;
   endTime: number | null;
+  cardColorIndex: number;
 };
 
 // Match Result

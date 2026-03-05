@@ -17,7 +17,7 @@ export default function GameScreen() {
   const router = useRouter();
   const { state, flipCard, checkMatch, resetFlipped, pauseGame, resumeGame } =
     useGame();
-  const { playNote, playChord, playSuccess, playFail } = useAudio();
+  const { stopCurrentCard, playNote, playChord, playSuccess, playFail } = useAudio();
   const isCheckingRef = useRef(false);
 
   // Track previous player for turn transition
@@ -106,7 +106,8 @@ export default function GameScreen() {
     // Flip the card
     flipCard(card);
 
-    // Play the sound
+    // Stop previous card sounds and play new ones
+    await stopCurrentCard();
     if (card.mode === "pitch") {
       await playNote((card as PitchCard).pitch);
     } else {
@@ -139,6 +140,7 @@ export default function GameScreen() {
           <CardGrid
             cards={state.cards}
             config={state.config}
+            cardColorIndex={state.cardColorIndex}
             onCardPress={handleCardPress}
             disabled={
               state.gameStatus !== "playing" || state.flippedCards.length >= 2
