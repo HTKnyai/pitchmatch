@@ -21,18 +21,22 @@ npm install
 
 ### 音声ファイルの生成
 
-このアプリは、シンプルなサイン波の音声ファイルを使用しています。音声ファイルを生成するには、以下のコマンドを実行してください。
+ピアノ音源（FluidR3_GM）を`assets/sounds/piano/`にダウンロードします。
+音声ファイルは既にリポジトリに含まれているため、通常は実行不要です。
+
+```bash
+python3 scripts/generate_piano_samples.py
+```
+
+このスクリプトは以下をダウンロード・生成します：
+- C2からC5までの37個のピアノ音（MIDI 36-72）をMP3形式で`assets/sounds/piano/`に保存
+- TypeScriptのインデックスファイル（`assets/sounds/index.ts`）を更新
+
+効果音（成功・失敗・ファンファーレ）を再生成する場合：
 
 ```bash
 python3 scripts/generate_audio.py
 ```
-
-このスクリプトは以下を生成します：
-- C2からC5までの37個のピアノ音（MIDI 36-72）
-- 成功、失敗、ファンファーレの効果音
-- TypeScriptのインデックスファイル（`assets/sounds/index.ts`）
-
-**注意**: 音声ファイルは既にリポジトリに含まれているため、通常は再生成する必要はありません。
 
 ### アプリの起動
 
@@ -82,22 +86,17 @@ pitchmatch/
 
 ## カスタム音声ファイル
 
-デフォルトの音声ファイルはシンプルなサイン波ですが、カスタム音声ファイルに置き換えることができます。
+ピアノ音源を差し替えたい場合は`scripts/generate_piano_samples.py`を編集してください。
 
-1. 各MIDI音符に対応するWAVファイルを `assets/sounds/` に配置
-   - ファイル名: `C2.wav`, `Cs2.wav`, `D2.wav`, ...
-   - 範囲: MIDI 36 (C2) から 72 (C5)
-
-2. 効果音ファイルを配置
-   - `success.wav`: マッチ成功時
-   - `fail.wav`: マッチ失敗時
-   - `fanfare.wav`: ゲームクリア時
-
-3. インデックスファイルを再生成
-   ```bash
-   python3 scripts/generate_audio.py
-   ```
+現在の音源構成：
+- `assets/sounds/piano/*.mp3` — ピアノ音（MIDI 36-72、全12音）
+- `assets/sounds/*.m4a` — 効果音（success / fail / fanfare）
 
 ## ライセンス
 
 MIT
+
+## クレジット
+
+- **ピアノ音源**: FluidR3_GM soundfont by Frank Wen, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+  - Source: [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts)
