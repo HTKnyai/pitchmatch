@@ -10,24 +10,24 @@ import { useEffect, useState } from "react";
 import { ANIMATION } from "../../constants/Config";
 
 type TurnIndicatorProps = {
-  currentPlayer: 1 | 2;
-  previousPlayer: 1 | 2 | null;
-  isTwoPlayer: boolean;
+  currentPlayer: 1 | 2 | 3 | 4;
+  previousPlayer: 1 | 2 | 3 | 4 | null;
+  isMultiPlayer: boolean;
 };
 
 export function TurnIndicator({
   currentPlayer,
   previousPlayer,
-  isTwoPlayer,
+  isMultiPlayer,
 }: TurnIndicatorProps) {
   const [showNotification, setShowNotification] = useState(false);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
 
   useEffect(() => {
-    // Only show notification on turn change in 2-player mode
+    // Only show notification on turn change in multi-player mode
     if (
-      isTwoPlayer &&
+      isMultiPlayer &&
       previousPlayer !== null &&
       previousPlayer !== currentPlayer
     ) {
@@ -49,7 +49,7 @@ export function TurnIndicator({
 
       return () => clearTimeout(timeout);
     }
-  }, [currentPlayer, previousPlayer, isTwoPlayer, opacity, scale]);
+  }, [currentPlayer, previousPlayer, isMultiPlayer, opacity, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

@@ -23,8 +23,8 @@ export function calculateFinalScore(
     `player${gameState.currentPlayer}` as keyof typeof gameState.players;
   const baseScore = gameState.players[currentPlayerKey].score;
 
-  // 2-player mode: no time bonus
-  if (config.playerCount === 2) {
+  // multi-player mode: no time bonus
+  if (config.playerCount > 1) {
     return baseScore;
   }
 
@@ -57,21 +57,23 @@ export function calculateAccuracy(
 
 export function getWinner(
   gameState: GameState
-): { winner: 1 | 2 | "tie"; scores: { player1: number; player2: number } } {
-  const player1Score = gameState.players.player1.score;
-  const player2Score = gameState.players.player2.score;
+): { winner: number | "tie"; scores: Record<string, number> } {
+  const playerCount = gameState.config.playerCount;
+  const scores: Record<string, number> = {};
 
-  let winner: 1 | 2 | "tie";
-  if (player1Score > player2Score) {
-    winner = 1;
-  } else if (player2Score > player1Score) {
-    winner = 2;
-  } else {
-    winner = "tie";
+  for (let i = 1; i <= playerCount; i++) {
+    const key = `player${i}` as keyof typeof gameState.players;
+    scores[key] = gameState.players[key].score;
   }
 
-  return {
-    winner,
-    scores: { player1: player1Score, player2: player2Score },
-  };
+  const maxScore = Math.max(...Object.values(scores));
+  const winners = Object.entries(scores).filter(([, s]) => s === maxScore);
+
+  if (winners.length > 1) {
+    return { winner: "tie", scores };
+  }
+
+  const winnerKey = winners[0][0]; // e.g. "player2"
+  const winnerNumber = parseInt(winnerKey.replace("player", ""), 10);
+  return { winner: winnerNumber, scores };
 }

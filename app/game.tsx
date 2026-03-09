@@ -21,8 +21,8 @@ export default function GameScreen() {
   const isCheckingRef = useRef(false);
 
   // Track previous player for turn transition
-  const [previousPlayer, setPreviousPlayer] = useState<1 | 2 | null>(null);
-  const previousPlayerRef = useRef<1 | 2>(state.currentPlayer);
+  const [previousPlayer, setPreviousPlayer] = useState<1 | 2 | 3 | 4 | null>(null);
+  const previousPlayerRef = useRef<1 | 2 | 3 | 4>(state.currentPlayer);
 
   // Score popup state
   const [scorePopup, setScorePopup] = useState<{
@@ -152,7 +152,7 @@ export default function GameScreen() {
         <TurnIndicator
           currentPlayer={state.currentPlayer}
           previousPlayer={previousPlayer}
-          isTwoPlayer={state.config.playerCount === 2}
+          isMultiPlayer={state.config.playerCount > 1}
         />
 
         {/* Score popup with combo info */}

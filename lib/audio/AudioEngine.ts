@@ -3,12 +3,14 @@ import { NOTE_NAMES, PITCH_RANGE } from "../../constants/Config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SoundCache = Map<string, Audio.Sound>;
+type SourceCache = Map<string, AVPlaybackSource>;
 
 const VOLUME_STORAGE_KEY = "@melody_memory/volume";
 const DEFAULT_VOLUME = 0.7;
 
 class AudioEngineClass {
   private soundCache: SoundCache = new Map();
+  private soundSources: SourceCache = new Map();
   private isInitialized = false;
   private isPreloaded = false;
   private volume: number = DEFAULT_VOLUME;
@@ -106,6 +108,7 @@ class AudioEngineClass {
       });
       if (status.isLoaded) {
         this.soundCache.set(key, sound);
+        this.soundSources.set(key, source);
       } else {
         console.warn(`Sound ${key} failed to load`);
       }
@@ -119,8 +122,14 @@ class AudioEngineClass {
     const sound = this.soundCache.get(key);
     if (sound) {
       try {
-        const status = await sound.getStatusAsync();
-        console.log(`Playing ${key}, status:`, status.isLoaded ? 'loaded' : 'not loaded');
+        let status = await sound.getStatusAsync();
+        if (!status.isLoaded) {
+          const source = this.soundSources.get(key);
+          if (source) {
+            await sound.loadAsync(source, { volume: this.volume, shouldPlay: false });
+            status = await sound.getStatusAsync();
+          }
+        }
         if (status.isLoaded) {
           await sound.setPositionAsync(0);
           await sound.playAsync();
@@ -220,6 +229,7 @@ class AudioEngineClass {
       }
     }
     this.soundCache.clear();
+    this.soundSources.clear();
     this.isInitialized = false;
     this.isPreloaded = false;
   }

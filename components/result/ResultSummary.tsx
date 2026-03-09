@@ -19,10 +19,10 @@ export function ResultSummary({
   config,
   isHighScore = false,
 }: ResultSummaryProps) {
-  const isTwoPlayer = config.playerCount === 2;
+  const isMultiPlayer = config.playerCount > 1;
 
-  if (isTwoPlayer) {
-    return <TwoPlayerResult gameState={gameState} />;
+  if (isMultiPlayer) {
+    return <MultiPlayerResult gameState={gameState} />;
   }
 
   return (
@@ -95,57 +95,45 @@ function SinglePlayerResult({
   );
 }
 
-function TwoPlayerResult({ gameState }: { gameState: GameState }) {
+function MultiPlayerResult({ gameState }: { gameState: GameState }) {
   const result = getWinner(gameState);
+  const playerCount = gameState.config.playerCount;
 
   return (
     <View className="items-center">
       <Text className="text-soft-charcoal/60 text-lg mb-2">
-        {result.winner === "tie" ? "It's a" : "Winner"}
+        {result.winner === "tie" ? "引き分け" : "勝者"}
       </Text>
       <Text className="text-soft-charcoal text-4xl font-bold mb-6">
         {result.winner === "tie"
-          ? "TIE!"
-          : result.winner === 1
-          ? "Player 1!"
-          : "Player 2!"}
+          ? "DRAW!"
+          : `Player ${result.winner}!`}
       </Text>
 
-      <View className="w-full flex-row justify-around bg-white/60 rounded-2xl p-4 border border-soft-charcoal/10">
-        <View className="items-center">
-          <Text
-            className={`text-lg font-bold ${
-              result.winner === 1 ? "text-warm-blue" : "text-soft-charcoal/60"
-            }`}
-          >
-            Player 1
-          </Text>
-          <Text className="text-soft-charcoal text-3xl font-bold">
-            {formatScore(result.scores.player1)}
-          </Text>
-          <Text className="text-soft-charcoal/60 text-sm">
-            {gameState.players.player1.matchedPairs} pairs
-          </Text>
-        </View>
-
-        <View className="items-center justify-center">
-          <Text className="text-soft-charcoal/40 text-2xl">vs</Text>
-        </View>
-
-        <View className="items-center">
-          <Text
-            className={`text-lg font-bold ${
-              result.winner === 2 ? "text-warm-blue" : "text-soft-charcoal/60"
-            }`}
-          >
-            Player 2
-          </Text>
-          <Text className="text-soft-charcoal text-3xl font-bold">
-            {formatScore(result.scores.player2)}
-          </Text>
-          <Text className="text-soft-charcoal/60 text-sm">
-            {gameState.players.player2.matchedPairs} pairs
-          </Text>
+      <View className="w-full bg-white/60 rounded-2xl p-4 border border-soft-charcoal/10">
+        <View className="flex-row flex-wrap justify-around gap-y-4">
+          {Array.from({ length: playerCount }, (_, i) => {
+            const n = i + 1;
+            const key = `player${n}` as keyof typeof gameState.players;
+            const isWinner = result.winner === n;
+            return (
+              <View key={n} className="items-center min-w-[80px]">
+                <Text
+                  className={`text-lg font-bold ${
+                    isWinner ? "text-warm-blue" : "text-soft-charcoal/60"
+                  }`}
+                >
+                  P{n}
+                </Text>
+                <Text className="text-soft-charcoal text-2xl font-bold">
+                  {formatScore(result.scores[key])}
+                </Text>
+                <Text className="text-soft-charcoal/60 text-sm">
+                  {gameState.players[key].matchedPairs} pairs
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </View>
     </View>

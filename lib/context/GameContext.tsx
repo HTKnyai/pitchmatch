@@ -31,6 +31,8 @@ const initialGameState: GameState = {
   players: {
     player1: { ...initialPlayerState },
     player2: { ...initialPlayerState },
+    player3: { ...initialPlayerState },
+    player4: { ...initialPlayerState },
   },
   flippedCards: [],
   matchedPairs: 0,
@@ -78,6 +80,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         players: {
           player1: { ...initialPlayerState },
           player2: { ...initialPlayerState },
+          player3: { ...initialPlayerState },
+          player4: { ...initialPlayerState },
         },
         flippedCards: [],
         matchedPairs: 0,
@@ -158,12 +162,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           endTime: isGameComplete ? Date.now() : state.endTime,
         };
       } else {
-        // No match - reset combo and switch player in 2-player mode
+        // No match - reset combo and switch player in multi-player mode
         const nextPlayer =
-          state.config.playerCount === 2
-            ? state.currentPlayer === 1
-              ? 2
-              : 1
+          state.config.playerCount > 1
+            ? ((state.currentPlayer % state.config.playerCount) + 1)
             : state.currentPlayer;
 
         return {
@@ -176,7 +178,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
               comboCount: 0,
             },
           },
-          currentPlayer: nextPlayer as 1 | 2,
+          currentPlayer: nextPlayer as 1 | 2 | 3 | 4,
         };
       }
     }

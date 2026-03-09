@@ -13,14 +13,19 @@ export default function TitleScreen() {
   const router = useRouter();
   const { setConfig, state } = useGame();
   const [imageError, setImageError] = useState(false);
+  const [showPlayerPicker, setShowPlayerPicker] = useState(false);
 
   const handleSinglePlayer = () => {
     setConfig({ ...state.config, playerCount: 1 });
     router.push("/customize");
   };
 
-  const handleTwoPlayer = () => {
-    setConfig({ ...state.config, playerCount: 2 });
+  const handleMultiPlayer = () => {
+    setShowPlayerPicker(true);
+  };
+
+  const handleSelectPlayerCount = (count: 2 | 3 | 4) => {
+    setConfig({ ...state.config, playerCount: count });
     router.push("/customize");
   };
 
@@ -49,18 +54,36 @@ export default function TitleScreen() {
       <View style={styles.buttonContainer}>
         <View style={styles.buttonRow}>
           <PillButton
-            label="1 Player"
-            sublabel="Score Attack"
+            label="ひとりで"
+            sublabel="スコアアタック"
             onPress={handleSinglePlayer}
             variant="filled"
           />
           <PillButton
-            label="2 Players"
-            sublabel="Battle Mode"
-            onPress={handleTwoPlayer}
+            label="みんなで"
+            sublabel="バトル"
+            onPress={handleMultiPlayer}
             variant="filled"
           />
         </View>
+
+        {showPlayerPicker && (
+          <View style={styles.playerPickerContainer}>
+            <Text style={styles.playerPickerLabel}>人数を選択</Text>
+            <View style={styles.playerPickerRow}>
+              {([2, 3, 4] as const).map((count) => (
+                <Pressable
+                  key={count}
+                  style={styles.playerCountButton}
+                  onPress={() => handleSelectPlayerCount(count)}
+                >
+                  <Text style={styles.playerCountText}>{count}人</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
+
         <View style={styles.buttonRow}>
           <PillButton
             label="Rankings"
@@ -154,5 +177,34 @@ const styles = StyleSheet.create({
     color: "rgba(74, 74, 74, 0.6)",
     marginTop: 4,
     fontFamily: "Nunito_400Regular",
+  },
+  playerPickerContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 20,
+    padding: 16,
+    alignItems: "center",
+    gap: 12,
+  },
+  playerPickerLabel: {
+    fontSize: 13,
+    color: "rgba(74, 74, 74, 0.7)",
+    fontFamily: "Nunito_600SemiBold",
+    letterSpacing: 1,
+  },
+  playerPickerRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  playerCountButton: {
+    flex: 1,
+    paddingVertical: 12,
+    backgroundColor: "#9B7ED9",
+    borderRadius: 16,
+    alignItems: "center",
+  },
+  playerCountText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "Nunito_700Bold",
   },
 });

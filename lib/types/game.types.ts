@@ -10,7 +10,7 @@ export type GameConfig = {
   showOctave: boolean;
   isBlindMode: boolean;
   isExtendedRules: boolean;
-  playerCount: 1 | 2;
+  playerCount: 1 | 2 | 3 | 4;
 };
 
 // Base Card Type
@@ -58,10 +58,12 @@ export type GameStatus = "idle" | "playing" | "paused" | "finished";
 export type GameState = {
   config: GameConfig;
   cards: Card[];
-  currentPlayer: 1 | 2;
+  currentPlayer: 1 | 2 | 3 | 4;
   players: {
     player1: PlayerState;
     player2: PlayerState;
+    player3: PlayerState;
+    player4: PlayerState;
   };
   flippedCards: Card[];
   matchedPairs: number;

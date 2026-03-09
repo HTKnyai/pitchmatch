@@ -17,10 +17,11 @@ type GameHeaderProps = {
 };
 
 type PlayerPanelProps = {
-  playerNumber: 1 | 2;
+  playerNumber: 1 | 2 | 3 | 4;
   score: number;
   comboCount: number;
   isActive: boolean;
+  compact?: boolean;
 };
 
 function PlayerPanel({
@@ -28,6 +29,7 @@ function PlayerPanel({
   score,
   comboCount,
   isActive,
+  compact = false,
 }: PlayerPanelProps) {
   const scale = useSharedValue(1);
   const borderWidth = useSharedValue(0);
@@ -69,21 +71,21 @@ function PlayerPanel({
     >
       <Text
         style={[
-          styles.playerLabel,
+          compact ? styles.playerLabelCompact : styles.playerLabel,
           isActive ? styles.playerLabelActive : styles.playerLabelInactive,
         ]}
       >
-        Player {playerNumber}
+        P{playerNumber}
       </Text>
       <Text
         style={[
-          styles.playerScore,
+          compact ? styles.playerScoreCompact : styles.playerScore,
           isActive ? styles.playerScoreActive : styles.playerScoreInactive,
         ]}
       >
         {formatScore(score)}
       </Text>
-      {comboCount > 1 && isActive && (
+      {comboCount > 1 && isActive && !compact && (
         <View style={styles.comboBadge}>
           <Text style={styles.comboText}>{comboCount}x Combo</Text>
         </View>
@@ -107,36 +109,36 @@ export function GameHeader({ gameState, config, onPause }: GameHeaderProps) {
     return () => clearInterval(interval);
   }, [gameState.gameStatus, gameState.startTime]);
 
-  const isTwoPlayer = config.playerCount === 2;
+  const isMultiPlayer = config.playerCount > 1;
+  const isCompact = config.playerCount >= 3;
 
   // Display difficulty name instead of level number
   const displayDifficulty = config.difficulty.toUpperCase();
 
   return (
     <View style={styles.container}>
-      {isTwoPlayer ? (
-        // Two player header
+      {isMultiPlayer ? (
+        // Multi-player header
         <View style={styles.twoPlayerContainer}>
-          <PlayerPanel
-            playerNumber={1}
-            score={gameState.players.player1.score}
-            comboCount={gameState.players.player1.comboCount}
-            isActive={gameState.currentPlayer === 1}
-          />
-
+          {Array.from({ length: config.playerCount }, (_, i) => {
+            const n = (i + 1) as 1 | 2 | 3 | 4;
+            const key = `player${n}` as keyof typeof gameState.players;
+            return (
+              <PlayerPanel
+                key={n}
+                playerNumber={n}
+                score={gameState.players[key].score}
+                comboCount={gameState.players[key].comboCount}
+                isActive={gameState.currentPlayer === n}
+                compact={isCompact}
+              />
+            );
+          })}
           <View style={styles.vsContainer}>
-            <Text style={styles.vsText}>VS</Text>
             <Pressable onPress={onPause} style={styles.pauseButtonSmall}>
               <Text style={styles.pauseButtonText}>II</Text>
             </Pressable>
           </View>
-
-          <PlayerPanel
-            playerNumber={2}
-            score={gameState.players.player2.score}
-            comboCount={gameState.players.player2.comboCount}
-            isActive={gameState.currentPlayer === 2}
-          />
         </View>
       ) : (
         // Single player header - New design
@@ -212,6 +214,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Nunito_600SemiBold",
   },
+  playerLabelCompact: {
+    fontSize: 11,
+    fontFamily: "Nunito_600SemiBold",
+  },
   playerLabelActive: {
     color: "#9B7ED9",
     fontFamily: "Nunito_800ExtraBold",
@@ -221,6 +227,10 @@ const styles = StyleSheet.create({
   },
   playerScore: {
     fontSize: 28,
+    fontFamily: "Nunito_700Bold",
+  },
+  playerScoreCompact: {
+    fontSize: 18,
     fontFamily: "Nunito_700Bold",
   },
   playerScoreActive: {

@@ -18,7 +18,7 @@ export default function ResultScreen() {
   const [hasSaved, setHasSaved] = useState(false);
 
   const config = state.config;
-  const isTwoPlayer = config.playerCount === 2;
+  const isMultiPlayer = config.playerCount > 1;
 
   useEffect(() => {
     // Redirect if game not finished
@@ -29,7 +29,7 @@ export default function ResultScreen() {
 
     // Load rankings and save score for single player
     const initResult = async () => {
-      if (!isTwoPlayer && !hasSaved) {
+      if (!isMultiPlayer && !hasSaved) {
         const finalScore = calculateFinalScore(state, config);
         const player = state.players.player1;
         const clearTime =
@@ -100,7 +100,7 @@ export default function ResultScreen() {
             isHighScore={isHighScore}
           />
 
-          {!isTwoPlayer && (
+          {!isMultiPlayer && (
             <View style={styles.rankingContainer}>
               <RankingPreview
                 rankings={rankings}

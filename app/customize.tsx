@@ -55,7 +55,7 @@ export default function CustomizeScreen() {
           <View style={styles.header}>
             <Button title="← Back" onPress={handleBack} variant="ghost" size="sm" />
             <Text style={styles.headerTitle}>
-              {config.playerCount === 1 ? "1 Player" : "2 Players"}
+              {config.playerCount === 1 ? "ひとりで" : `みんなで (${config.playerCount}人)`}
             </Text>
           </View>
 
